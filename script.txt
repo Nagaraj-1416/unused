@@ -1,123 +1,83 @@
 <script>
-
   document.addEventListener("DOMContentLoaded", function () {
-
     const variants = {{ product.variants | json }};
-
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
-
     let selectedSize = "";
- 
+
     const variantInput = document.getElementById("pdp-cart-btn");
-
     const addToCartBtn = document.querySelector(".add-to-cart-btn");
- 
     const colorLinks = document.querySelectorAll(".color-swatch-link");
-
     const sizeItems = document.querySelectorAll(".size-item");
- 
+
     function updateSelectedVariant() {
-
       const matchedVariant = variants.find(v =>
-
         v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-
         v.option2.toLowerCase() === selectedSize.toLowerCase()
-
       );
- 
+
       if (matchedVariant && matchedVariant.available) {
-
         variantInput.value = matchedVariant.id;
-
         addToCartBtn.disabled = false;
-
       } else {
-
         variantInput.value = "";
-
         addToCartBtn.disabled = true;
-
       }
-
     }
- 
+
     colorLinks.forEach(link => {
-
       link.addEventListener("click", () => {
-
         colorLinks.forEach(l => l.classList.remove("active"));
-
         link.classList.add("active");
- 
+
         selectedColor = link.dataset.colorName;
 
-        document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
- 
-        sizeItems.forEach(item => {
+        // **Reset selected size here on color change**
+        selectedSize = "";
+        sizeItems.forEach(item => item.classList.remove("active"));
+        addToCartBtn.disabled = true;
+        variantInput.value = "";
 
+        document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
+
+        sizeItems.forEach(item => {
           const size = item.textContent.trim();
 
           const matchingVariant = variants.find(v =>
-
             v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-
             v.option2.toLowerCase() === size.toLowerCase()
-
           );
 
           if (matchingVariant && matchingVariant.available) {
-
             item.classList.remove("size-unavailable");
-
           } else {
-
             item.classList.add("size-unavailable");
-
           }
-
         });
- 
+
         if (selectedSize) {
-
           updateSelectedVariant();
-
         }
-
       });
-
     });
- 
+
     sizeItems.forEach(item => {
-
       item.addEventListener("click", () => {
-
         if (item.classList.contains("size-unavailable")) return;
- 
+
         sizeItems.forEach(i => i.classList.remove("active"));
-
         item.classList.add("active");
- 
+
         selectedSize = item.dataset.sizeName || item.textContent.trim();
-
         updateSelectedVariant();
-
       });
-
     });
- 
+
     colorLinks.forEach(link => {
-
       if (link.dataset.colorName === selectedColor) {
-
         link.classList.add("active");
-
         link.click();
-
       }
-
     });
-
   });
 </script>
  

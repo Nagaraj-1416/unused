@@ -1,6 +1,11 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const variants = {{ product.variants | json }};
+    const variants = [
+  { id: 1, option1: "Red", option2: "S", available: true },
+  { id: 2, option1: "Red", option2: "M", available: false },
+  { id: 3, option1: "Blue", option2: "S", available: true },
+];
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
     let selectedSize = "";
 

@@ -1,11 +1,9 @@
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  (function() {
+    // Use Shopify Liquid to output variants array as JSON
     const variants = {{ product.variants | json }};
-    const variants = [
-  { id: 1, option1: "Red", option2: "S", available: true },
-  { id: 2, option1: "Red", option2: "M", available: false },
-  { id: 3, option1: "Blue", option2: "S", available: true },
-];
+    
+    // Use Shopify Liquid to get selected or first available variant color
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
     let selectedSize = "";
 
@@ -35,18 +33,17 @@
         link.classList.add("active");
 
         selectedColor = link.dataset.colorName;
+        document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
 
-        // **Reset selected size here on color change**
+        // Reset selected size when color changes
         selectedSize = "";
         sizeItems.forEach(item => item.classList.remove("active"));
         addToCartBtn.disabled = true;
         variantInput.value = "";
 
-        document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
-
+        // Update available sizes based on selected color
         sizeItems.forEach(item => {
           const size = item.textContent.trim();
-
           const matchingVariant = variants.find(v =>
             v.option1.toLowerCase() === selectedColor.toLowerCase() &&
             v.option2.toLowerCase() === size.toLowerCase()
@@ -58,10 +55,6 @@
             item.classList.add("size-unavailable");
           }
         });
-
-        if (selectedSize) {
-          updateSelectedVariant();
-        }
       });
     });
 
@@ -77,14 +70,16 @@
       });
     });
 
+    // Initialize active color and sizes on page load
     colorLinks.forEach(link => {
       if (link.dataset.colorName === selectedColor) {
         link.classList.add("active");
         link.click();
       }
     });
-  });
+  })();
 </script>
+
  
 <!-- Color Selection -->
 <div class="color-title-container">

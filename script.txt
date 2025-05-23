@@ -1,88 +1,10 @@
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const variants = {{ product.variants | json }};
-    console.log("All Variants:", variants);
-
-    let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
-    let selectedSize = "";
-
-    const variantInput = document.getElementById("pdp-cart-btn");
-    const addToCartBtn = document.querySelector(".add-to-cart-btn");
-    const colorLinks = document.querySelectorAll(".color-swatch-link");
-    const sizeItems = document.querySelectorAll(".size-item");
-
-    function updateSelectedVariant() {
-      const matchedVariant = variants.find(v =>
-        v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-        v.option2.toLowerCase() === selectedSize.toLowerCase()
-      );
-      console.log("Selected Color:", selectedColor, "Selected Size:", selectedSize);
-      console.log("Matched Variant:", matchedVariant);
-
-      if (matchedVariant && matchedVariant.available) {
-        variantInput.value = matchedVariant.id;
-        addToCartBtn.disabled = false;
-        console.log("Variant Available - ID set to:", matchedVariant.id);
-      } else {
-        variantInput.value = "";
-        addToCartBtn.disabled = true;
-        console.warn("No matching variant found or not available.");
-      }
-    }
-
-    colorLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        colorLinks.forEach(l => l.classList.remove("active"));
-        link.classList.add("active");
-        selectedColor = link.dataset.colorName;
-        document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
-
-        console.log("Color Selected:", selectedColor);
-
-        // Reset selected size when color changes
-        sizeItems.forEach(item => item.classList.remove("active"));
-        selectedSize = "";
-
-        sizeItems.forEach(item => {
-          const size = item.textContent.trim();
-          const matchingVariant = variants.find(v =>
-            v.option1.toUpperCase() === selectedColor.toUpperCase() &&
-            v.option2.toLowerCase() === size.toLowerCase()
-          );
-
-          if (matchingVariant && matchingVariant.available) {
-            item.classList.remove("size-unavailable");
-          } else {
-            item.classList.add("size-unavailable");
-          }
-        });
-
-        if (selectedSize) {
-          updateSelectedVariant();
-        }
-      });
-    });
-
-    sizeItems.forEach(item => {
-      item.addEventListener("click", () => {
-        if (item.classList.contains("size-unavailable")) {
-          console.warn("Clicked unavailable size:", item.textContent.trim());
-          return;
-        }
-        sizeItems.forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        selectedSize = item.dataset.sizeName || item.textContent.trim();
-        console.log("Size Selected:", selectedSize);
-        updateSelectedVariant();
-      });
-    });
-
-    // Preselect the initially selected color
-    colorLinks.forEach(link => {
-      if (link.dataset.colorName === selectedColor) {
-        link.classList.add("active");
-        link.click(); // Trigger the logic for updating sizes
-      }
-    });
-  });
-</script>
+<div class="size-container">
+          <span class="variant-selector size-item" data-size-name="17" underseater"="">17" Underseater</span>
+          <span class="variant-selector size-item" data-size-name="20''">20''</span>
+          <span class="variant-selector size-item" data-size-name="24''">24''</span>
+          <span class="variant-selector size-item" data-size-name="28''">28''</span>
+          <span class="variant-selector size-item" data-size-name="2PC 20/28">2PC 20/28</span>
+          <span class="variant-selector size-item" data-size-name="3PC 20/24/28">3PC 20/24/28</span>
+          <span class="variant-selector size-item" data-size-name="S">S</span>
+    
+  </div>

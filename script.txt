@@ -112,52 +112,63 @@
 
 <div id="variant-price" style="margin-top: 10px; font-weight: bold;"></div>
 
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const priceDisplay = document.getElementById("variant-price");
+  const variants = {{ product.variants | json }};
+  let selectedColor = variants[0].option1;
+  let selectedSize = variants[0].option2;
 
-    function updateDisplayedPrice() {
-      let matchedVariant = variants.find(v =>
-        v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-        v.option2.toLowerCase() === selectedSize.toLowerCase()
-      );
+  const sizeItems = document.querySelectorAll(".size-item");
+  const colorLinks = document.querySelectorAll(".color-link");
+  const priceDisplay = document.getElementById("variant-price");
 
-      if (!matchedVariant && selectedSize) {
-        const numberMatch = selectedSize.match(/^\d+/);
-        if (numberMatch) {
-          const sizeNumber = numberMatch[0];
-          matchedVariant = variants.find(v =>
-            v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-            v.option2.toLowerCase().startsWith(sizeNumber)
-          );
-        }
-      }
+  function updateDisplayedPrice() {
+    let matchedVariant = variants.find(v =>
+      v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+      v.option2.toLowerCase() === selectedSize.toLowerCase()
+    );
 
-      if (!matchedVariant) {
+    if (!matchedVariant && selectedSize) {
+      const numberMatch = selectedSize.match(/^\d+/);
+      if (numberMatch) {
+        const sizeNumber = numberMatch[0];
         matchedVariant = variants.find(v =>
-          v.option1.toLowerCase() === selectedColor.toLowerCase()
+          v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+          v.option2.toLowerCase().startsWith(sizeNumber)
         );
-      }
-
-      if (matchedVariant) {
-        priceDisplay.textContent = matchedVariant.price ? `$${(matchedVariant.price / 100).toFixed(2)}` : '';
-      } else {
-        priceDisplay.textContent = '';
       }
     }
 
-    sizeItems.forEach(item => {
-      item.addEventListener("click", () => {
-        setTimeout(updateDisplayedPrice, 0);
-      });
-    });
+    if (!matchedVariant) {
+      matchedVariant = variants.find(v =>
+        v.option1.toLowerCase() === selectedColor.toLowerCase()
+      );
+    }
 
-    colorLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        setTimeout(updateDisplayedPrice, 0);
-      });
-    });
+    if (matchedVariant) {
+      priceDisplay.textContent = matchedVariant.price
+        ? `$${(matchedVariant.price / 100).toFixed(2)}`
+        : '';
+    } else {
+      priceDisplay.textContent = '';
+    }
 
-    updateDisplayedPrice();
+    console.log("Selected:", selectedColor, selectedSize, matchedVariant);
+  }
+
+  sizeItems.forEach(item => {
+    item.addEventListener("click", () => {
+      selectedSize = item.textContent.trim();
+      setTimeout(updateDisplayedPrice, 0);
+    });
   });
+
+  colorLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      selectedColor = link.textContent.trim();
+      setTimeout(updateDisplayedPrice, 0);
+    });
+  });
+
+  updateDisplayedPrice();
 </script>

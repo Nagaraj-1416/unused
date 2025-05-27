@@ -6,18 +6,36 @@
     const variants = {{ product.variants | json }};
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
     let selectedSize = "";
-
+ 
     const variantInput = document.getElementById("pdp-cart-btn");
     const addToCartBtn = document.querySelector(".add-to-cart-btn");
     const colorLinks = document.querySelectorAll(".color-swatch-link");
     const sizeItems = document.querySelectorAll(".size-item");
     const priceDisplay = document.getElementById("variant-price");
-
+ 
     function updateDisplayedPrice() {
-      const matchedVariant = variants.find(v =>
+      let matchedVariant = variants.find(v =>
         v.option1.toLowerCase() === selectedColor.toLowerCase() &&
         v.option2.toLowerCase() === selectedSize.toLowerCase()
       );
+ 
+      if (!matchedVariant && selectedSize) {
+        const numberMatch = selectedSize.match(/^\d+/);
+        if (numberMatch) {
+          const sizeNumber = numberMatch[0];
+          matchedVariant = variants.find(v =>
+            v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+            v.option2.toLowerCase().startsWith(sizeNumber)
+          );
+        }
+      }
+ 
+      if (!matchedVariant) {
+        matchedVariant = variants.find(v =>
+          v.option1.toLowerCase() === selectedColor.toLowerCase()
+        );
+      }
+ 
       if (matchedVariant) {
         priceDisplay.textContent = matchedVariant.price
           ? `$${(matchedVariant.price / 100).toFixed(2)}`
@@ -26,84 +44,87 @@
         priceDisplay.textContent = '';
       }
     }
-
+ 
     function updateSelectedVariant() {
-      const matchedVariant = variants.find(v =>
+      let matchedVariant = variants.find(v =>
         v.option1.toLowerCase() === selectedColor.toLowerCase() &&
         v.option2.toLowerCase() === selectedSize.toLowerCase()
       );
-
-      if (matchedVariant && matchedVariant.available) {
+ 
+      if (!matchedVariant && selectedSize) {
+        const numberMatch = selectedSize.match(/^\d+/);
+        if (numberMatch) {
+          const sizeNumber = numberMatch[0];
+          matchedVariant = variants.find(v =>
+            v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+            v.option2.toLowerCase().startsWith(sizeNumber)
+          );
+        }
+      }
+ 
+      if (matchedVariant && matchedVariant.available && selectedSize) {
         variantInput.value = matchedVariant.id;
         addToCartBtn.disabled = false;
       } else {
         variantInput.value = "";
         addToCartBtn.disabled = true;
       }
-
+ 
       updateDisplayedPrice();
     }
-
-    function autoSelectFirstAvailableSize() {
-      let firstAvailable = null;
-      sizeItems.forEach(item => {
-        const size = item.dataset.sizeName || item.textContent.trim();
-        const matchingVariant = variants.find(v =>
-          v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-          v.option2.toLowerCase() === size.toLowerCase() &&
-          v.available
-        );
-
-        if (matchingVariant && !firstAvailable) {
-          firstAvailable = item;
-          selectedSize = size;
-        }
-
-        if (matchingVariant) {
-          item.classList.remove("size-unavailable");
-        } else {
-          item.classList.add("size-unavailable");
-        }
-
-        item.classList.remove("active");
-      });
-
-      if (firstAvailable) {
-        firstAvailable.classList.add("active");
-      }
-
-      updateSelectedVariant();
-    }
-
+ 
     colorLinks.forEach(link => {
       link.addEventListener("click", () => {
         colorLinks.forEach(l => l.classList.remove("active"));
         link.classList.add("active");
         selectedColor = link.dataset.colorName || link.textContent.trim();
         document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
-
-        autoSelectFirstAvailableSize();
+ 
+        // Reset selected size and disable Add to Cart
+        sizeItems.forEach(item => item.classList.remove("active"));
+        selectedSize = "";
+        addToCartBtn.disabled = true;
+ 
+        sizeItems.forEach(item => {
+          const size = item.textContent.trim();
+          const matchingVariant = variants.find(v =>
+            v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+            v.option2.toLowerCase() === size.toLowerCase()
+          );
+          if (matchingVariant && matchingVariant.available) {
+            item.classList.remove("size-unavailable");
+          } else {
+            item.classList.add("size-unavailable");
+          }
+        });
+ 
+        updateDisplayedPrice();
       });
     });
-
+ 
     sizeItems.forEach(item => {
       item.addEventListener("click", () => {
         if (item.classList.contains("size-unavailable")) return;
-
-        sizeItems.forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        selectedSize = item.dataset.sizeName || item.textContent.trim();
-        updateSelectedVariant();
+ 
+        if (item.classList.contains("active")) {
+          item.classList.remove("active");
+          selectedSize = "";
+          variantInput.value = "";
+          addToCartBtn.disabled = true;
+        } else {
+          sizeItems.forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          selectedSize = item.dataset.sizeName || item.textContent.trim();
+          updateSelectedVariant();
+        }
       });
     });
-
-    // Initial color and size selection
     colorLinks.forEach(link => {
       if ((link.dataset.colorName || link.textContent.trim()) === selectedColor) {
         link.classList.add("active");
         link.dispatchEvent(new Event("click", { bubbles: true }));
       }
     });
+    addToCartBtn.disabled = true;
   });
 </script>
-

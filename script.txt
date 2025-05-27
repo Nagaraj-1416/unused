@@ -104,3 +104,60 @@
     });
   });
 </script>
+
+
+
+
+
+
+<div id="variant-price" style="margin-top: 10px; font-weight: bold;"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const priceDisplay = document.getElementById("variant-price");
+
+    function updateDisplayedPrice() {
+      let matchedVariant = variants.find(v =>
+        v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+        v.option2.toLowerCase() === selectedSize.toLowerCase()
+      );
+
+      if (!matchedVariant && selectedSize) {
+        const numberMatch = selectedSize.match(/^\d+/);
+        if (numberMatch) {
+          const sizeNumber = numberMatch[0];
+          matchedVariant = variants.find(v =>
+            v.option1.toLowerCase() === selectedColor.toLowerCase() &&
+            v.option2.toLowerCase().startsWith(sizeNumber)
+          );
+        }
+      }
+
+      if (!matchedVariant) {
+        matchedVariant = variants.find(v =>
+          v.option1.toLowerCase() === selectedColor.toLowerCase()
+        );
+      }
+
+      if (matchedVariant) {
+        priceDisplay.textContent = matchedVariant.price ? `$${(matchedVariant.price / 100).toFixed(2)}` : '';
+      } else {
+        priceDisplay.textContent = '';
+      }
+    }
+
+    sizeItems.forEach(item => {
+      item.addEventListener("click", () => {
+        setTimeout(updateDisplayedPrice, 0);
+      });
+    });
+
+    colorLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        setTimeout(updateDisplayedPrice, 0);
+      });
+    });
+
+    updateDisplayedPrice();
+  });
+</script>

@@ -1,3 +1,20 @@
+<ul>
+  {% for variant in product.variants %}
+<li>
+      {% assign variant_title = '' %}
+      {% for option in variant.options %}
+        {% assign variant_title = variant_title | append: option %}
+        {% unless forloop.last %}
+          {% assign variant_title = variant_title | append: '/' %}
+        {% endunless %}
+      {% endfor %}
+ 
+      {{ variant_title }} - {{ variant.price | money }}
+</li>
+  {% endfor %}
+</ul>
+
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const variants = {{ product.variants | json }};

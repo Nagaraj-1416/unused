@@ -122,6 +122,10 @@
   const colorLinks = document.querySelectorAll(".color-link");
   const priceDisplay = document.getElementById("variant-price");
 
+console.log("Selected Color:", selectedColor);
+console.log("Selected Size:", selectedSize);
+console.log("Matched Variant:", matchedVariant);
+
   function updateDisplayedPrice() {
     let matchedVariant = variants.find(v =>
       v.option1.toLowerCase() === selectedColor.toLowerCase() &&

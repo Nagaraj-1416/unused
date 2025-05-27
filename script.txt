@@ -1,22 +1,33 @@
 <div id="variant-price" style="margin-top: 10px; font-weight: bold;"></div>
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const variants = {{ product.variants | json }};
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
     let selectedSize = "";
+
     const variantInput = document.getElementById("pdp-cart-btn");
     const addToCartBtn = document.querySelector(".add-to-cart-btn");
     const colorLinks = document.querySelectorAll(".color-swatch-link");
     const sizeItems = document.querySelectorAll(".size-item");
- 
+    const priceDisplay = document.getElementById("variant-price");
+
+    function updateDisplayedPrice(matchedVariant) {
+      if (matchedVariant) {
+        priceDisplay.textContent = matchedVariant.price
+          ? `$${(matchedVariant.price / 100).toFixed(2)}`
+          : '';
+      } else {
+        priceDisplay.textContent = '';
+      }
+    }
+
     function updateSelectedVariant() {
       let matchedVariant = variants.find(v =>
         v.option1.toLowerCase() === selectedColor.toLowerCase() &&
         v.option2.toLowerCase() === selectedSize.toLowerCase()
       );
- 
-      if (!matchedVariant) {
+
+      if (!matchedVariant && selectedSize) {
         const numberMatch = selectedSize.match(/^\d+/);
         if (numberMatch) {
           const sizeNumber = numberMatch[0];
@@ -26,7 +37,13 @@
           );
         }
       }
- 
+
+      if (!matchedVariant) {
+        matchedVariant = variants.find(v =>
+          v.option1.toLowerCase() === selectedColor.toLowerCase()
+        );
+      }
+
       if (matchedVariant && matchedVariant.available) {
         variantInput.value = matchedVariant.id;
         addToCartBtn.disabled = false;
@@ -34,20 +51,23 @@
         variantInput.value = "";
         addToCartBtn.disabled = true;
       }
+
+      updateDisplayedPrice(matchedVariant);
     }
- 
+
     colorLinks.forEach(link => {
       link.addEventListener("click", () => {
         colorLinks.forEach(l => l.classList.remove("active"));
         link.classList.add("active");
-        selectedColor = link.dataset.colorName;
+        selectedColor = link.dataset.colorName || link.textContent.trim();
         document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
- 
-        // Reset selected size and disable "Add to Cart" button
-        sizeItems.forEach(item => item.classList.remove("active"));
+
+        // Reset size
         selectedSize = "";
+        sizeItems.forEach(item => item.classList.remove("active"));
         addToCartBtn.disabled = true;
- 
+
+        // Update available sizes
         sizeItems.forEach(item => {
           const size = item.textContent.trim();
           const matchingVariant = variants.find(v =>
@@ -60,18 +80,21 @@
             item.classList.add("size-unavailable");
           }
         });
+
+        updateSelectedVariant();
       });
     });
- 
+
     sizeItems.forEach(item => {
       item.addEventListener("click", () => {
         if (item.classList.contains("size-unavailable")) return;
- 
+
         if (item.classList.contains("active")) {
           item.classList.remove("active");
           selectedSize = "";
           variantInput.value = "";
           addToCartBtn.disabled = true;
+          updateDisplayedPrice(null);
         } else {
           sizeItems.forEach(i => i.classList.remove("active"));
           item.classList.add("active");
@@ -80,76 +103,13 @@
         }
       });
     });
- 
-    colorLinks.forEach(link => {
-      if (link.dataset.colorName === selectedColor) {
-        link.classList.add("active");
-        link.click();
-      }
-    });
-  });
-</script>
 
-<script>
-  const variants = {{ product.variants | json }};
-  let selectedColor = variants[0].option1;
-  let selectedSize = variants[0].option2;
- 
-  const sizeItems = document.querySelectorAll(".size-item");
-  const colorLinks = document.querySelectorAll(".color-link");
-  const priceDisplay = document.getElementById("variant-price");
- 
-console.log("Selected Color:", selectedColor);
-console.log("Selected Size:", selectedSize);
-console.log("Matched Variant:", matchedVariant);
- 
-  function updateDisplayedPrice() {
-    let matchedVariant = variants.find(v =>
-      v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-      v.option2.toLowerCase() === selectedSize.toLowerCase()
-    );
- 
-    if (!matchedVariant && selectedSize) {
-      const numberMatch = selectedSize.match(/^\d+/);
-      if (numberMatch) {
-        const sizeNumber = numberMatch[0];
-        matchedVariant = variants.find(v =>
-          v.option1.toLowerCase() === selectedColor.toLowerCase() &&
-          v.option2.toLowerCase().startsWith(sizeNumber)
-        );
+    // Auto-select current color on load
+    colorLinks.forEach(link => {
+      if ((link.dataset.colorName || link.textContent.trim()) === selectedColor) {
+        link.classList.add("active");
+        link.click(); // Triggers price update
       }
-    }
- 
-    if (!matchedVariant) {
-      matchedVariant = variants.find(v =>
-        v.option1.toLowerCase() === selectedColor.toLowerCase()
-      );
-    }
- 
-    if (matchedVariant) {
-      priceDisplay.textContent = matchedVariant.price
-        ? `$${(matchedVariant.price / 100).toFixed(2)}`
-        : '';
-    } else {
-      priceDisplay.textContent = '';
-    }
- 
-    console.log("Selected:", selectedColor, selectedSize, matchedVariant);
-  }
- 
-  sizeItems.forEach(item => {
-    item.addEventListener("click", () => {
-      selectedSize = item.textContent.trim();
-      setTimeout(updateDisplayedPrice, 0);
     });
   });
- 
-  colorLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      selectedColor = link.textContent.trim();
-      setTimeout(updateDisplayedPrice, 0);
-    });
-  });
- 
-  updateDisplayedPrice();
 </script>

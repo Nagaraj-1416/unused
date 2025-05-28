@@ -541,9 +541,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     const mainImage = document.getElementById("mainImage");
     const mobileImage = document.getElementById("mainMobileImage");
 
-    const mobileSlider = document.getElementById("mobile-slider"); 
-    const fallbackImageSrc = "{{ 'placeholder.jpg' | asset_url }}"; //
-
+    const fallbackImageSrc = "{{ 'placeholder.jpg' | asset_url }}";
     function updateMainImage(variant) {
       if (!variant) return;
       const image = variant.featured_image;
@@ -557,6 +555,10 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         mobileImage.src = newSrc;
         mobileImage.setAttribute("data-zoom", zoomSrc);
         mobileImage.alt = variant.option1;
+
+        mobileImage.classList.remove("loaded");
+        void mobileImage.offsetWidth; // trigger reflow
+        mobileImage.classList.add("loaded");
       } else {
         // fallback image
         mainImage.src = fallbackImageSrc;
@@ -654,10 +656,6 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
           setActiveSize(selectedSize);
         }
         updateSelectedVariant(selectedColor, selectedSize);
-
-        if (mobileSlider && mobileSlider.querySelector(".image-container")) {
-          mobileSlider.querySelector(".image-container").scrollLeft = 0;
-        }
       });
     });
 

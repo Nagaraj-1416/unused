@@ -1,5 +1,101 @@
 https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview_key=b10dea078daba7983d8947514167dffa
 
+<div
+        id="ProductGalleryItems"
+        class="hidden md:block md:pr-3 md:grow-0 md:shrink-0 md:w-1/6"
+        style="max-height: 844px; overflow-y: auto;"
+>
+        {% for image in product.images %}
+<img
+            class="w-full thumbnail this-one secondary-image"
+            src="{{ image | img_url: '800x' }}"
+            alt="White"
+            data-uw-rm-alt-original="White"
+            data-uw-rm-alt="ALT"
+>
+        {% endfor %}
+</div>
+
+<div id="ProductImagesWrapper" class="{{ product_images_wrapper_classes }} w-full">
+<!-- Gallery Items -->
+<div
+        id="ProductGalleryItems"
+        class="hidden md:block md:pr-3 md:grow-0 md:shrink-0 md:w-1/6"
+        style="max-height: 844px; overflow-y: auto;"
+>
+        {% for image in product.images %}
+<img
+            class="w-full thumbnail this-one secondary-image"
+            src="{{ image | img_url: '800x' }}"
+            alt="White"
+            data-uw-rm-alt-original="White"
+            data-uw-rm-alt="ALT"
+>
+        {% endfor %}
+</div>
+ 
+      <!-- Main Image -->
+<div
+        class="product-main-image relative{% if settings.enable_pdp_main_images_t_across %} w-full{% else %} w-full {% if settings.pdp_thumbnail_pos != 'bottom' %} md:grow md:shrink-0 md:w-5/6{% endif %}{% endif %}"
+>
+<div id="ProductMainImageContainer" class="relative w-full">
+<div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
+            {% include 'smart-tags-render-smart-tag-badge-pdp' %}
+</div>
+<div class="product-label-container">            
+<!-- NEW / SOLD OUT LABEL -->
+{% assign specific_tag = 'Badge:Preorder' %}
+{% assign specific_tag_value = 'Badge:ComingSoon' %}
+{% if product.available == false %}
+ 
+                {% if product.tags contains 'Badge:Isabella' %}
+<div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+                {% elsif product.tags contains 'Badge:Rachel' %}
+<div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+                {% elsif product.tags contains 'Badge:Stylist' %}
+<div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+                {% elsif product.tags contains specific_tag %}
+<div class="product-label">PREORDER</div>
+                {% elsif product.tags contains specific_tag_value %}  
+<div class="product-label">COMING SOON</div>
+                {% else %}
+                  {% comment %} <div class="product-label">SOLD OUT</div>   {% endcomment %}  
+                {% endif %}
+              {% else %}
+ 
+                 {% if product.tags contains 'Badge:Isabella' %}
+<div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+                {% elsif product.tags contains 'Badge:Rachel' %}
+<div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+                {% elsif product.tags contains 'Badge:Stylist' %}
+<div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+                 {% elsif product.tags contains specific_tag %}
+<div class="product-label">PREORDER</div>
+                  {% else %}
+                   {% for t in product.tags %}
+                      {% if t contains 'Badge:BackinStock' %} 
+<div class="product-label">BACK IN STOCK</div>
+                      {% elsif t contains 'smarttag_new_arrival' %} 
+<div class="product-label">NEW</div>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+              {% endif %}
+</div>
+<div class="image-container">
+<img
+              id="mainImage"
+              class="w-full{% if settings.enable_pdp_main_images_t_across %} hidden{% endif %} image-zoom"
+              src="{{ featured_image | img_url: '800x' }}"
+              data-zoom="{{ featured_image | img_url: '1024x1024', scale: 2 }}"
+              alt="{{ featured_image.alt | escape }}"
+>
+<div class="image-details"></div>
+</div>
+</div>
+</div>
+</div>
+
 <div class="slider" id="mobile-slider">
 <div class="product-label-container">
  

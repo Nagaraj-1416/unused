@@ -348,8 +348,8 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const variants = {{ product.variants | json }};
-    console.log("VariantImages",variants)
-    console.log("VariantsImagesJson",JSON.stringify(variants,null,10))
+    console.log("VariantImages", variants);
+    console.log("VariantsImagesJson", JSON.stringify(variants, null, 10));
     let selectedColor = "{{ product.selected_or_first_available_variant.option1 }}";
     let selectedSize = "";
     const variantInput = document.getElementById("pdp-cart-btn");
@@ -361,23 +361,36 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     const colorDisplay = document.getElementById("variant-color");
     const mainImage = document.getElementById("mainImage");
     const mobileImage = document.getElementById("mainMobileImage");
+
     function updateMainImage(variant) {
+      const fallbackSrc = "https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview_key=b10dea078daba7983d8947514167dffa";
+      const fallbackZoomSrc = fallbackSrc;
+
+      let newSrc, zoomSrc, altText;
+
       if (variant && variant.featured_image && variant.featured_image.src) {
         const baseImage = variant.featured_image.src.replace(/(\.jpg|\.png|\.webp).*/, '');
-        const newSrc = `${baseImage}_800x.jpg`;
-        const zoomSrc = `${baseImage}_1024x1024@2x.jpg`;
-        if (mainImage) {
-          mainImage.src = newSrc;
-          mainImage.setAttribute("data-zoom", zoomSrc);
-          mainImage.alt = variant.option1;
-        }
-        if (mobileImage) {
-          mobileImage.src = newSrc;
-          mobileImage.setAttribute("data-zoom", zoomSrc);
-          mobileImage.alt = variant.option1;
-        }
+        newSrc = `${baseImage}_800x.jpg`;
+        zoomSrc = `${baseImage}_1024x1024@2x.jpg`;
+        altText = variant.option1;
+      } else {
+        newSrc = fallbackSrc;
+        zoomSrc = fallbackZoomSrc;
+        altText = "Fallback image";
+      }
+
+      if (mainImage) {
+        mainImage.src = newSrc;
+        mainImage.setAttribute("data-zoom", zoomSrc);
+        mainImage.alt = altText;
+      }
+      if (mobileImage) {
+        mobileImage.src = newSrc;
+        mobileImage.setAttribute("data-zoom", zoomSrc);
+        mobileImage.alt = altText;
       }
     }
+
     function updateDisplayedPrice(matchedVariant) {
       if (matchedVariant) {
         const price = matchedVariant.price ? `$${(matchedVariant.price / 100).toFixed(2)}` : '';
@@ -390,6 +403,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         colorDisplay.textContent = '';
       }
     }
+
     function updateSelectedVariant() {
       let matchedVariant = variants.find(v =>
         v.option1.toLowerCase() === selectedColor.toLowerCase() &&
@@ -420,6 +434,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
       }
       updateDisplayedPrice(matchedVariant);
     }
+
     function selectFirstAvailableSizeForColor() {
       let firstAvailable = null;
       sizeItems.forEach(item => {
@@ -440,6 +455,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         updateSelectedVariant();
       }
     }
+
     colorLinks.forEach(link => {
       link.addEventListener("click", () => {
         colorLinks.forEach(l => l.classList.remove("active"));
@@ -448,7 +464,6 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         document.querySelector("#selected-color strong").innerText = selectedColor.toUpperCase();
         selectedSize = "";
         sizeItems.forEach(item => item.classList.remove("active"));
-        // Update available sizes
         sizeItems.forEach(item => {
           const size = item.textContent.trim();
           const matchingVariant = variants.find(v =>
@@ -464,6 +479,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         selectFirstAvailableSizeForColor();
       });
     });
+
     sizeItems.forEach(item => {
       item.addEventListener("click", () => {
         if (item.classList.contains("size-unavailable")) return;
@@ -482,7 +498,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         }
       });
     });
-    // Initialize first color
+
     const firstColorLink = colorLinks[0];
     if (firstColorLink) {
       firstColorLink.classList.add("active");
@@ -504,6 +520,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     }
   });
 </script>
+
 
 
 

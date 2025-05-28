@@ -1,84 +1,78 @@
 <div class="slider" id="mobile-slider">
-<div class="product-label-container">            
-<!-- NEW / SOLD OUT LABEL -->
-{% assign specific_tag = 'Badge:Preorder' %}
-{% assign specific_tag_value = 'Badge:ComingSoon' %}
-{% if product.available == false %}
-                {% if product.tags contains 'Badge:Isabella' %}
-<div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
-                {% elsif product.tags contains 'Badge:Rachel' %}
-<div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
-                {% elsif product.tags contains 'Badge:Stylist' %}
-<div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
-                {% elsif product.tags contains specific_tag %}
-<div class="product-label">PREORDER</div>
-                {% elsif product.tags contains specific_tag_value %}  
-<div class="product-label">COMING SOON</div>
-                {% else %}
-                  {% comment %}  <div class="product-label">SOLD OUT</div>  {% endcomment %}    
-                {% endif %}
-              {% else %}
- 
-                {% if product.tags contains 'Badge:Isabella' %}
-<div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
-                {% elsif product.tags contains 'Badge:Rachel' %}
-<div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
-                {% elsif product.tags contains 'Badge:Stylist' %}
-<div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
-                {% elsif product.tags contains specific_tag %}
-<div class="product-label">PREORDER</div>
-                {% else %}
-                 {% for t in product.tags %}
-                    {% if t contains 'Badge:BackinStock' %} 
-<div class="product-label">BACK IN STOCK</div>
-                    {% elsif t contains 'smarttag_new_arrival' %} 
-<div class="product-label">NEW</div>
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
-              {% endif %}
-</div>
-<div class="image-container">
-<!-- <button class="slider-nav-btn" id="slidePrevBtn"></button>
-<button class="slider-nav-btn" id="slideNextBtn"></button> -->
-        {% for image in product.images %}
-<div>
-<img
-              class="w-full"
-              src="{{ image | img_url: '800x' }}"
-              data-zoom="{{ image | img_url: 'master' }}"
-              alt="White"
-              data-uw-rm-alt-original="White"
-              data-uw-rm-alt="ALT"
->
-</div>
-        {% endfor %}
-</div>
-<div class="dots"></div>
-</div>
-
-// Color list which need to show the main img by click any one of the color
-
-<div class="color-circle-container">
-<div class="color-swatch-link" data-color-name="{{ value }}">
- 
-    {% assign swatch_image = '' %}
-    {% assign lower_value = value | downcase %}
- 
-    {% for image in product.images %}
-      {% if image.src contains lower_value and image.src contains '_sw' %}
-        {% assign swatch_image = image %}
-        {% break %}
+  <div class="product-label-container">
+    {% assign specific_tag = 'Badge:Preorder' %}
+    {% assign specific_tag_value = 'Badge:ComingSoon' %}
+    {% if product.available == false %}
+      {% if product.tags contains 'Badge:Isabella' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+      {% elsif product.tags contains 'Badge:Rachel' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Rachel Platten</span></div>
+      {% elsif product.tags contains 'Badge:Stylist' %}
+        <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+      {% elsif product.tags contains specific_tag %}
+        <div class="product-label">PREORDER</div>
+      {% elsif product.tags contains specific_tag_value %}
+        <div class="product-label">COMING SOON</div>
       {% endif %}
-    {% endfor %}
- 
-    {% if swatch_image != '' %}
-<img class="color-variant" src="{{ swatch_image | img_url: '1024x' }}" alt="{{ value }}">
     {% else %}
-<div class="color-variant no-image-color" style="background-color: {{ value | downcase }};"></div>
+      {% if product.tags contains 'Badge:Isabella' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+      {% elsif product.tags contains 'Badge:Rachel' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Rachel Platten</span></div>
+      {% elsif product.tags contains 'Badge:Stylist' %}
+        <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+      {% elsif product.tags contains specific_tag %}
+        <div class="product-label">PREORDER</div>
+      {% else %}
+        {% for t in product.tags %}
+          {% if t contains 'Badge:BackinStock' %}
+            <div class="product-label">BACK IN STOCK</div>
+          {% elsif t contains 'smarttag_new_arrival' %}
+            <div class="product-label">NEW</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     {% endif %}
- 
   </div>
+
+  <div class="image-container">
+    {% for image in product.images %}
+      <div>
+        <img
+          class="w-full"
+          src="{{ image | img_url: '800x' }}"
+          data-zoom="{{ image | img_url: 'master' }}"
+          alt="White"
+          {% if forloop.first %}id="mainMobileImage"{% endif %}
+        >
+      </div>
+    {% endfor %}
+  </div>
+  <div class="dots"></div>
+</div>
+
+<!-- Color Swatches -->
+<div class="color-circle-container">
+  {% for variant in product.variants %}
+    {% assign value = variant.option1 %}
+    <div class="color-swatch-link" data-color-name="{{ value }}" data-variant-id="{{ variant.id }}">
+      {% assign swatch_image = '' %}
+      {% assign lower_value = value | downcase %}
+
+      {% for image in product.images %}
+        {% if image.src contains lower_value and image.src contains '_sw' %}
+          {% assign swatch_image = image %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+
+      {% if swatch_image != '' %}
+        <img class="color-variant" src="{{ swatch_image | img_url: '1024x' }}" alt="{{ value }}">
+      {% else %}
+        <div class="color-variant no-image-color" style="background-color: {{ value | downcase }};"></div>
+      {% endif %}
+    </div>
+  {% endfor %}
 </div>
 
 
@@ -364,13 +358,25 @@
     const priceDisplayDesktop = document.getElementById("variant-price-desktop");
     const colorDisplay = document.getElementById("variant-color");
     const mainImage = document.getElementById("mainImage");
+    const mobileImage = document.getElementById("mainMobileImage"); // ✅ mobile support
 
     function updateMainImage(variant) {
       if (variant && variant.featured_image && variant.featured_image.src) {
-        const baseImage = variant.featured_image.src.replace(/(\.jpg|\.png).*/, '');
-        mainImage.src = `${baseImage}_800x.jpg`;
-        mainImage.setAttribute("data-zoom", `${baseImage}_1024x1024@2x.jpg`);
-        mainImage.alt = variant.option1; // color
+        const baseImage = variant.featured_image.src.replace(/(\.jpg|\.png|\.webp).*/, '');
+        const newSrc = `${baseImage}_800x.jpg`;
+        const zoomSrc = `${baseImage}_1024x1024@2x.jpg`;
+
+        if (mainImage) {
+          mainImage.src = newSrc;
+          mainImage.setAttribute("data-zoom", zoomSrc);
+          mainImage.alt = variant.option1;
+        }
+
+        if (mobileImage) {
+          mobileImage.src = newSrc;
+          mobileImage.setAttribute("data-zoom", zoomSrc);
+          mobileImage.alt = variant.option1;
+        }
       }
     }
 
@@ -379,7 +385,7 @@
         const price = matchedVariant.price ? `$${(matchedVariant.price / 100).toFixed(2)}` : '';
         priceDisplay.textContent = price;
         priceDisplayDesktop.textContent = price;
-        colorDisplay.textContent = selectedColor ? selectedColor : '';
+        colorDisplay.textContent = selectedColor || '';
       } else {
         priceDisplay.textContent = '';
         priceDisplayDesktop.textContent = '';
@@ -515,4 +521,5 @@
     }
   });
 </script>
+
 

@@ -537,10 +537,12 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     const mainImage = document.getElementById("mainImage");
     const mobileImage = document.getElementById("mainMobileImage");
 
+    const fallbackImageSrc = "{{ 'placeholder.jpg' | asset_url }}"; // 🔁 replace with your fallback image path
+
     function updateMainImage(variant) {
       if (!variant) return;
       const image = variant.featured_image;
-      if (image) {
+      if (image && image.src) {
         const baseImage = image.src.replace(/(\.jpg|\.png|\.webp).*/, '');
         const newSrc = `${baseImage}_800x.jpg`;
         const zoomSrc = `${baseImage}_1024x1024@2x.jpg`;
@@ -550,6 +552,14 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         mobileImage.src = newSrc;
         mobileImage.setAttribute("data-zoom", zoomSrc);
         mobileImage.alt = variant.option1;
+      } else {
+        // fallback image
+        mainImage.src = fallbackImageSrc;
+        mainImage.removeAttribute("data-zoom");
+        mainImage.alt = "Product Image";
+        mobileImage.src = fallbackImageSrc;
+        mobileImage.removeAttribute("data-zoom");
+        mobileImage.alt = "Product Image";
       }
     }
 
@@ -648,7 +658,6 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         if (item.classList.contains("size-unavailable")) return;
 
         if (item.classList.contains("active")) {
-          // Deselected size, fallback to first available
           const fallback = findFirstAvailableSizeForColor(selectedColor);
           if (fallback) {
             selectedSize = fallback.option2;
@@ -663,7 +672,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
       });
     });
 
-    // Initial Setup on Page Load
+    // Initial Setup
     const firstColor = colorLinks[0];
     if (firstColor) {
       firstColor.classList.add("active");
@@ -679,6 +688,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     }
   });
 </script>
+
 
 
 

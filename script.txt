@@ -637,7 +637,8 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     const mainImage = document.getElementById("mainImage");
     const mobileImage = document.getElementById("mainMobileImage");
 
-    const fallbackImageSrc = "{{ 'placeholder.jpg' | asset_url }}";
+    const fallbackImageSrc = "{{ 'placeholder.jpg' | asset_url }}"; // Replace with actual fallback
+
     function updateMainImage(variant) {
       if (!variant) return;
       const image = variant.featured_image;
@@ -653,10 +654,9 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
         mobileImage.alt = variant.option1;
 
         mobileImage.classList.remove("loaded");
-        void mobileImage.offsetWidth; // trigger reflow
+        void mobileImage.offsetWidth;
         mobileImage.classList.add("loaded");
       } else {
-        // fallback image
         mainImage.src = fallbackImageSrc;
         mainImage.removeAttribute("data-zoom");
         mainImage.alt = "Product Image";
@@ -719,11 +719,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
     function setActiveSize(sizeText) {
       sizeItems.forEach(item => {
         const size = item.textContent.trim();
-        if (size.toLowerCase() === sizeText.toLowerCase()) {
-          item.classList.add("active");
-        } else {
-          item.classList.remove("active");
-        }
+        item.classList.toggle("active", size.toLowerCase() === sizeText.toLowerCase());
       });
     }
 
@@ -731,11 +727,7 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
       sizeItems.forEach(item => {
         const size = item.textContent.trim();
         const variant = findVariant(selectedColor, size);
-        if (variant && variant.available) {
-          item.classList.remove("size-unavailable");
-        } else {
-          item.classList.add("size-unavailable");
-        }
+        item.classList.toggle("size-unavailable", !(variant && variant.available));
       });
     }
 
@@ -792,6 +784,68 @@ https://qhh83hshwulo64vw-57151226063.shopifypreview.com/products_preview?preview
   });
 </script>
 
+
+<div class="slider" id="mobile-slider">
+  <!-- Product Label / Badge Section -->
+  <div class="product-label-container">
+    {% assign specific_tag = 'Badge:Preorder' %}
+    {% assign specific_tag_value = 'Badge:ComingSoon' %}
+
+    {% if product.available == false %}
+      {% if product.tags contains 'Badge:Isabella' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+      {% elsif product.tags contains 'Badge:Rachel' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Rachel Platten</span></div>
+      {% elsif product.tags contains 'Badge:Stylist' %}
+        <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+      {% elsif product.tags contains specific_tag %}
+        <div class="product-label">PREORDER</div>
+      {% elsif product.tags contains specific_tag_value %}
+        <div class="product-label">COMING SOON</div>
+      {% endif %}
+    {% else %}
+      {% if product.tags contains 'Badge:Isabella' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+      {% elsif product.tags contains 'Badge:Rachel' %}
+        <div class="product-label two-line-badge"><span>As Seen On</span> <span>Rachel Platten</span></div>
+      {% elsif product.tags contains 'Badge:Stylist' %}
+        <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+      {% elsif product.tags contains specific_tag %}
+        <div class="product-label">PREORDER</div>
+      {% else %}
+        {% for t in product.tags %}
+          {% if t contains 'Badge:BackinStock' %}
+            <div class="product-label">BACK IN STOCK</div>
+          {% elsif t contains 'smarttag_new_arrival' %}
+            <div class="product-label">NEW</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <!-- Image Slider Section -->
+  <div class="image-container">
+    {% for image in product.images %}
+      <div class="mobile-thumb" data-index="{{ forloop.index0 }}">
+        <img
+          class="w-full mobile-gallery-image"
+          src="{{ image | img_url: '800x' }}"
+          data-zoom="{{ image | img_url: 'master' }}"
+          alt="{{ image.alt | escape }}"
+          {% if forloop.first %}id="mainMobileImage"{% endif %}
+        >
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Dots Navigation -->
+  <div class="dots">
+    {% for image in product.images %}
+      <span class="dot" data-index="{{ forloop.index0 }}" style="cursor: pointer;">●</span>
+    {% endfor %}
+  </div>
+</div>
 
 
 

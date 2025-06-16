@@ -1,28 +1,45 @@
-Shipping & Handling
-Shipping options and costs vary by order value, items, and destination. Final charges are calculated at checkout.
- 
-Standard Shipping: $12.95 (4–7 business days)
- 
-2-Day Shipping: $27.95 (2–3 business days)
- 
-Next Day Shipping: $37.95 (1–2 business days)
- 
-Free Shipping on orders $100+ (pre-tax, after discounts) within the 48 contiguous U.S.
- 
-Orders placed after 12 p.m. ET may ship the next business day.
-We ship Monday–Friday, excluding federal holidays. Delays may occur due to order verification.
-Shipping rates and restrictions may apply.
- 
-30-Day Return Policy
-Items purchased on KennethCole.com can be returned within 30 days of shipment. Merchandise must be unworn, with tags and original packaging. Shoes must include the shoebox in original condition.
- 
-Final Sale items are not eligible for return.
- 
-Original shipping fees are non-refundable.
- 
-Returns using our prepaid label will incur a $10 fee.
- 
-To start a return, click Request a Return and follow the instructions.
-Refunds are processed within 10–14 business days after receipt. You’ll receive an email once complete.
- 
-Kenneth Cole is not responsible for lost or damaged return packages.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipping & Return Policy</title>
+</head>
+<body>
+
+  <h2><u>Shipping & Handling</u></h2>
+  <p>Shipping options and costs vary by order value, items, and destination. Final charges are calculated at checkout.</p>
+
+  <ul>
+    <li><strong>Standard Shipping:</strong> $12.95 (4–7 business days)</li>
+    <li><strong>2-Day Shipping:</strong> $27.95 (2–3 business days)</li>
+    <li><strong>Next Day Shipping:</strong> $37.95 (1–2 business days)</li>
+    <li><strong>Free Shipping</strong> on orders $100+ (pre-tax, after discounts) within the 48 contiguous U.S.</li>
+  </ul>
+
+  <p>
+    Orders placed after 12 p.m. ET may ship the next business day.<br>
+    We ship Monday–Friday, excluding federal holidays. Delays may occur due to order verification.<br>
+    Shipping rates and restrictions may apply.
+  </p>
+
+  <h3><u>30-Day Return Policy</u></h3>
+  <p>
+    Items purchased on <a href="https://www.kennethcole.com" target="_blank">KennethCole.com</a> can be returned within 30 days of shipment.
+    Merchandise must be unworn, with tags and original packaging. Shoes must include the shoebox in original condition.
+  </p>
+
+  <ul>
+    <li>Final Sale items are not eligible for return.</li>
+    <li>Original shipping fees are non-refundable.</li>
+    <li>Returns using our prepaid label will incur a $10 fee.</li>
+  </ul>
+
+  <p>
+    To start a return, click <a href="#">Request a Return</a> and follow the instructions.<br>
+    Refunds are processed within 10–14 business days after receipt. You’ll receive an email once complete.
+  </p>
+
+  <p>Kenneth Cole is not responsible for lost or damaged return packages.</p>
+
+</body>
+</html>

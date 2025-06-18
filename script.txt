@@ -1,103 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shipping & Return Details</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: #000;
-      line-height: 1.6;
-      padding: 40px;
-      background-color: #f9f9f9;
-    }
+<section class="accordion-wrapper product-review" data-accordion="product-review">
+       <a href="#BVRRSearchContainer" style="text-decoration: none;">
+        <div class="accordion-header">
+            <span class="title">
+             Reviews
+            <div class="bv-inline-rating" data-bv-show="inline_rating" data-bv-product-id="7080698904783" data-bv-ready="true"><div class=""><div id="95d443c5-f8ef-4faa-8561-c69ced40f956" class="bv_main_container bv_hover bv_inline_rating_container_left" itemprop="aggregateRating" itemscope="" itemtype="https://schema.org/AggregateRating"><div class="bv_stars_component_container" aria-hidden="true"><div class="bv_stars_button_container"><span class="bv_stars_svg_no_wrap" aria-hidden="true"><svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 25 25" style="width: 20px !important; height: 20px !important;"><polygon points="" style="fill: url(&quot;#bv_inline_ratings_star_filled_0_99.99_AzpKuJWIA6&quot;) !important;"></polygon><path d="M24.8676481,9.0008973 C24.7082329,8.54565507 24.2825324,8.23189792 23.7931772,8.20897226 L16.1009423,8.20897226 L13.658963,0.793674161 C13.4850788,0.296529881 12.9965414,-0.0267985214 12.4623931,0.00174912135 L12.4623931,0.00174912135 C11.9394964,-0.00194214302 11.4747239,0.328465149 11.3146628,0.81767189 L8.87268352,8.23296999 L1.20486846,8.23296999 C0.689809989,8.22949161 0.230279943,8.55030885 0.0640800798,9.0294023 C-0.102119784,9.50849575 0.0623083246,10.0383495 0.472274662,10.3447701 L6.69932193,14.9763317 L4.25734261,22.4396253 C4.08483744,22.9295881 4.25922828,23.4727606 4.68662933,23.7767181 C5.11403038,24.0806756 5.69357086,24.0736812 6.11324689,23.7595003 L12.6333317,18.9599546 L19.1778362,23.7595003 C19.381674,23.9119158 19.6299003,23.9960316 19.8860103,23.9994776 C20.2758842,24.0048539 20.6439728,23.8232161 20.8724402,23.5127115 C21.1009077,23.202207 21.1610972,22.8017824 21.0337405,22.4396253 L18.5917612,14.9763317 L24.6967095,10.3207724 C25.0258477,9.95783882 25.0937839,9.43328063 24.8676481,9.0008973 Z" style="fill: url(&quot;#bv_inline_ratings_star_filled_0_99.99_AzpKuJWIA6&quot;) !important;"></path><defs><linearGradient id="bv_inline_ratings_star_filled_0_99.99_AzpKuJWIA6" x1="99.99%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color: rgb(0, 0, 0); stop-opacity: 1;"></stop><stop offset="1%" style="stop-color: rgb(241, 241, 241); stop-opacity: 1;"></stop></linearGradient></defs></svg><svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 25 25" style="width: 20px !important; height: 20px !important;"><polygon points="" style="fill: url(&quot;#bv_inline_ratings_star_filled_1_99.99_CiH4lvtgKo&quot;) !important;"></polygon><path d="M24.8676481,9.0008973 C24.7082329,8.54565507 24.2825324,8.23189792 23.7931772,8.20897226 L16.1009423,8.20897226 L13.658963,0.793674161 C13.4850788,0.296529881 12.9965414,-0.0267985214 12.4623931,0.00174912135 L12.4623931,0.00174912135 C11.9394964,-0.00194214302 11.4747239,0.328465149 11.3146628,0.81767189 L8.87268352,8.23296999 L1.20486846,8.23296999 C0.689809989,8.22949161 0.230279943,8.55030885 0.0640800798,9.0294023 C-0.102119784,9.50849575 0.0623083246,10.0383495 0.472274662,10.3447701 L6.69932193,14.9763317 L4.25734261,22.4396253 C4.08483744,22.9295881 4.25922828,23.4727606 4.68662933,23.7767181 C5.11403038,24.0806756 5.69357086,24.0736812 6.11324689,23.7595003 L12.6333317,18.9599546 L19.1778362,23.7595003 C19.381674,23.9119158 19.6299003,23.9960316 19.8860103,23.9994776 C20.2758842,24.0048539 20.6439728,23.8232161 20.8724402,23.5127115 C21.1009077,23.202207 21.1610972,22.8017824 21.0337405,22.4396253 L18.5917612,14.9763317 L24.6967095,10.3207724 C25.0258477,9.95783882 25.0937839,9.43328063 24.8676481,9.0008973 Z" style="fill: url(&quot;#bv_inline_ratings_star_filled_1_99.99_CiH4lvtgKo&quot;) !important;"></path><defs><linearGradient id="bv_inline_ratings_star_filled_1_99.99_CiH4lvtgKo" x1="99.99%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color: rgb(0, 0, 0); stop-opacity: 1;"></stop><stop offset="1%" style="stop-color: rgb(241, 241, 241); stop-opacity: 1;"></stop></linearGradient></defs></svg><svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 25 25" style="width: 20px !important; height: 20px !important;"><polygon points="" style="fill: url(&quot;#bv_inline_ratings_star_filled_2_99.99_9alqaxMNU5&quot;) !important;"></polygon><path d="M24.8676481,9.0008973 C24.7082329,8.54565507 24.2825324,8.23189792 23.7931772,8.20897226 L16.1009423,8.20897226 L13.658963,0.793674161 C13.4850788,0.296529881 12.9965414,-0.0267985214 12.4623931,0.00174912135 L12.4623931,0.00174912135 C11.9394964,-0.00194214302 11.4747239,0.328465149 11.3146628,0.81767189 L8.87268352,8.23296999 L1.20486846,8.23296999 C0.689809989,8.22949161 0.230279943,8.55030885 0.0640800798,9.0294023 C-0.102119784,9.50849575 0.0623083246,10.0383495 0.472274662,10.3447701 L6.69932193,14.9763317 L4.25734261,22.4396253 C4.08483744,22.9295881 4.25922828,23.4727606 4.68662933,23.7767181 C5.11403038,24.0806756 5.69357086,24.0736812 6.11324689,23.7595003 L12.6333317,18.9599546 L19.1778362,23.7595003 C19.381674,23.9119158 19.6299003,23.9960316 19.8860103,23.9994776 C20.2758842,24.0048539 20.6439728,23.8232161 20.8724402,23.5127115 C21.1009077,23.202207 21.1610972,22.8017824 21.0337405,22.4396253 L18.5917612,14.9763317 L24.6967095,10.3207724 C25.0258477,9.95783882 25.0937839,9.43328063 24.8676481,9.0008973 Z" style="fill: url(&quot;#bv_inline_ratings_star_filled_2_99.99_9alqaxMNU5&quot;) !important;"></path><defs><linearGradient id="bv_inline_ratings_star_filled_2_99.99_9alqaxMNU5" x1="99.99%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color: rgb(0, 0, 0); stop-opacity: 1;"></stop><stop offset="1%" style="stop-color: rgb(241, 241, 241); stop-opacity: 1;"></stop></linearGradient></defs></svg><svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 25 25" style="width: 20px !important; height: 20px !important;"><polygon points="" style="fill: url(&quot;#bv_inline_ratings_star_filled_3_99.99_9mkE2LcpYE&quot;) !important;"></polygon><path d="M24.8676481,9.0008973 C24.7082329,8.54565507 24.2825324,8.23189792 23.7931772,8.20897226 L16.1009423,8.20897226 L13.658963,0.793674161 C13.4850788,0.296529881 12.9965414,-0.0267985214 12.4623931,0.00174912135 L12.4623931,0.00174912135 C11.9394964,-0.00194214302 11.4747239,0.328465149 11.3146628,0.81767189 L8.87268352,8.23296999 L1.20486846,8.23296999 C0.689809989,8.22949161 0.230279943,8.55030885 0.0640800798,9.0294023 C-0.102119784,9.50849575 0.0623083246,10.0383495 0.472274662,10.3447701 L6.69932193,14.9763317 L4.25734261,22.4396253 C4.08483744,22.9295881 4.25922828,23.4727606 4.68662933,23.7767181 C5.11403038,24.0806756 5.69357086,24.0736812 6.11324689,23.7595003 L12.6333317,18.9599546 L19.1778362,23.7595003 C19.381674,23.9119158 19.6299003,23.9960316 19.8860103,23.9994776 C20.2758842,24.0048539 20.6439728,23.8232161 20.8724402,23.5127115 C21.1009077,23.202207 21.1610972,22.8017824 21.0337405,22.4396253 L18.5917612,14.9763317 L24.6967095,10.3207724 C25.0258477,9.95783882 25.0937839,9.43328063 24.8676481,9.0008973 Z" style="fill: url(&quot;#bv_inline_ratings_star_filled_3_99.99_9mkE2LcpYE&quot;) !important;"></path><defs><linearGradient id="bv_inline_ratings_star_filled_3_99.99_9mkE2LcpYE" x1="99.99%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color: rgb(0, 0, 0); stop-opacity: 1;"></stop><stop offset="1%" style="stop-color: rgb(241, 241, 241); stop-opacity: 1;"></stop></linearGradient></defs></svg><svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 25 25" style="width: 20px !important; height: 20px !important;"><polygon points="" style="fill: url(&quot;#bv_inline_ratings_star_filled_4_85.71_lEjkfYMN2T&quot;) !important;"></polygon><path d="M24.8676481,9.0008973 C24.7082329,8.54565507 24.2825324,8.23189792 23.7931772,8.20897226 L16.1009423,8.20897226 L13.658963,0.793674161 C13.4850788,0.296529881 12.9965414,-0.0267985214 12.4623931,0.00174912135 L12.4623931,0.00174912135 C11.9394964,-0.00194214302 11.4747239,0.328465149 11.3146628,0.81767189 L8.87268352,8.23296999 L1.20486846,8.23296999 C0.689809989,8.22949161 0.230279943,8.55030885 0.0640800798,9.0294023 C-0.102119784,9.50849575 0.0623083246,10.0383495 0.472274662,10.3447701 L6.69932193,14.9763317 L4.25734261,22.4396253 C4.08483744,22.9295881 4.25922828,23.4727606 4.68662933,23.7767181 C5.11403038,24.0806756 5.69357086,24.0736812 6.11324689,23.7595003 L12.6333317,18.9599546 L19.1778362,23.7595003 C19.381674,23.9119158 19.6299003,23.9960316 19.8860103,23.9994776 C20.2758842,24.0048539 20.6439728,23.8232161 20.8724402,23.5127115 C21.1009077,23.202207 21.1610972,22.8017824 21.0337405,22.4396253 L18.5917612,14.9763317 L24.6967095,10.3207724 C25.0258477,9.95783882 25.0937839,9.43328063 24.8676481,9.0008973 Z" style="fill: url(&quot;#bv_inline_ratings_star_filled_4_85.71_lEjkfYMN2T&quot;) !important;"></path><defs><linearGradient id="bv_inline_ratings_star_filled_4_85.71_lEjkfYMN2T" x1="85.71%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color: rgb(0, 0, 0); stop-opacity: 1;"></stop><stop offset="1%" style="stop-color: rgb(241, 241, 241); stop-opacity: 1;"></stop></linearGradient></defs></svg></span></div></div><div class="bv_sub_container"><div class="bv_averageRating_component_container" aria-hidden="true"><div class="bv_text" itemprop="ratingValue">4.9</div></div><div class="bv_numReviews_component_container" aria-hidden="true"><meta itemprop="reviewCount" content="7"><div class="bv_text">(7)</div></div></div><div class="bv-off-screen">4.9 out of 5 stars. 7 reviews </div></div></div></div>
+            </span>
+            <span class="accordion-review-icon">
+                <img src="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/chevron-right-thin.svg?v=1743098599" alt="menu">
+            </span>
+        </div>
+      </a>
+        <div class="accordion-content">
+          <div class="accordion-inner-content">
 
-    .accordion-content {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    .accordion-inner-content h2,
-    .accordion-inner-content h3 {
-      font-size: 16px;
-      font-weight: bold;
-      text-decoration: underline;
-      margin: 20px 0 10px;
-    }
-
-    .accordion-inner-content p {
-      margin-bottom: 16px;
-    }
-
-    .accordion-inner-content ul {
-      list-style: disc;
-      padding-left: 20px;
-      margin-bottom: 16px;
-    }
-
-    .accordion-inner-content li {
-      margin-bottom: 8px;
-    }
-
-    .accordion-inner-content a {
-      color: #0071bc;
-      text-decoration: underline;
-    }
-
-    .accordion-inner-content strong {
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="accordion-content">
-    <div class="accordion-inner-content">
-      <h2>Shipping & Handling</h2>
-      <p>
-        Shipping options and costs vary by order value, items, and destination. Final charges are calculated at checkout.
-      </p>
-
-      <ul>
-        <li><strong>Standard Shipping:</strong> $12.95 (4–7 business days)</li>
-        <li><strong>2-Day Shipping:</strong> $27.95 (2–3 business days)</li>
-        <li><strong>Next Day Shipping:</strong> $37.95 (1–2 business days)</li>
-        <li><strong>Free Shipping</strong> on orders $100+ (pre-tax, after discounts) within the 48 contiguous U.S.</li>
-      </ul>
-
-      <p>
-        Orders placed after 12 p.m. ET may ship the next business day.<br>
-        We ship Monday–Friday, excluding federal holidays. Delays may occur due to order verification.<br>
-        Shipping rates and restrictions may apply.
-      </p>
-
-      <h3>30-Day Return Policy</h3>
-      <p>
-        Items purchased on <a href="https://www.kennethcole.com" target="_blank">KennethCole.com</a> can be returned within 30 days of shipment.
-        Merchandise must be unworn, with tags and original packaging. Shoes must include the shoebox in original condition.
-      </p>
-
-      <ul>
-        <li>Final Sale items are not eligible for return.</li>
-        <li>Original shipping fees are non-refundable.</li>
-        <li>Returns using our prepaid label will incur a $10 fee.</li>
-      </ul>
-
-      <p>
-        To start a return, click <a href="#">Request a Return</a> and follow the instructions.<br>
-        Refunds are processed within 10–14 business days after receipt. You'll receive an email once complete.
-      </p>
-
-      <p>
-        Kenneth Cole is not responsible for lost or damaged return packages.
-      </p>
-    </div>
-  </div>
-
-</body>
-</html>
+          </div>
+        </div>
+    </section>

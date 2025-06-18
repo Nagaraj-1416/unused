@@ -19,12 +19,13 @@
 
 
 
-.product-review {
+/* Target ONLY the product-review section */
+section.accordion-wrapper.product-review {
     font-family: Arial, sans-serif;
     margin: 10px 0;
 }
 
-.accordion-header {
+section.accordion-wrapper.product-review .accordion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -33,7 +34,7 @@
     cursor: pointer;
 }
 
-.title {
+section.accordion-wrapper.product-review .title {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -41,36 +42,36 @@
     color: #333;
 }
 
-.bv_stars_svg_no_wrap {
+section.accordion-wrapper.product-review .bv_stars_svg_no_wrap {
     display: inline-flex;
     gap: 2px;
 }
 
-.bv_text {
+section.accordion-wrapper.product-review .bv_text {
     font-size: 14px;
     color: #333;
 }
 
-.bv_averageRating_component_container .bv_text {
+section.accordion-wrapper.product-review .bv_averageRating_component_container .bv_text {
     font-weight: bold;
 }
 
-.bv_numReviews_component_container .bv_text {
+section.accordion-wrapper.product-review .bv_numReviews_component_container .bv_text {
     color: #666;
 }
 
-.accordion-review-icon img {
+section.accordion-wrapper.product-review .accordion-review-icon img {
     width: 16px;
     height: 16px;
     opacity: 0.6;
 }
 
-/* If you need to adjust the star color */
-.bv_stars_svg_no_wrap svg path {
-    fill: #000 !important; /* Black stars as shown in image */
+/* Force black stars (remove gradient) */
+section.accordion-wrapper.product-review .bv_stars_svg_no_wrap svg path {
+    fill: #000 !important;
 }
 
-/* Remove the gradient fill */
-.bv_stars_svg_no_wrap svg defs {
+/* Hide gradient definitions */
+section.accordion-wrapper.product-review .bv_stars_svg_no_wrap svg defs {
     display: none;
 }

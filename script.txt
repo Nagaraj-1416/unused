@@ -1,39 +1,32 @@
-const targetForm = document.querySelector('[data-testid="klaviyo-form-S7EHmJ"]');
+<script>
+  const targetSrc = "https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg";
 
-if (targetForm) {
-  const handleImageAttributes = (element) => {
-    const images = element.querySelectorAll('img');
-
-    images.forEach((img) => {
-      // Add empty alt if missing
-      if (!img.hasAttribute('alt') || img.getAttribute('alt') === null) {
-        img.setAttribute('alt', '');
-      }
-
-      // Remove tabindex if present
-      if (img.hasAttribute('tabindex')) {
-        img.removeAttribute('tabindex');
-      }
-    });
+  const setAltIfMatch = (node) => {
+    if (node.tagName === 'IMG' && node.src === targetSrc) {
+      node.alt = "";
+    } else if (node.querySelectorAll) {
+      node.querySelectorAll(`img[src="${targetSrc}"]`).forEach(img => {
+        img.alt = "";
+      });
+    }
   };
 
-  // Initial check on load
-  handleImageAttributes(targetForm);
-
-  // Set up the observer
-  const observer = new MutationObserver((mutationsList) => {
-    mutationsList.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          // Process new elements and their children
-          handleImageAttributes(node);
-        }
-      });
+  // Observe DOM changes
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(setAltIfMatch);
     });
   });
 
-  observer.observe(targetForm, {
+  observer.observe(document.body, {
     childList: true,
-    subtree: true,
+    subtree: true
   });
-}
+
+  // Also handle if image already exists on load
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(`img[src="${targetSrc}"]`).forEach(img => {
+      img.alt = "";
+    });
+  });
+</script>

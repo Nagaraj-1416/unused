@@ -1,2 +1,37 @@
- 
-https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg
+<script>
+  const targetSrcList = [
+    "https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg",
+    "https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg"
+  ];
+
+  const setAltIfMatch = (node) => {
+    if (node.tagName === 'IMG' && targetSrcList.includes(node.src)) {
+      node.alt = "";
+    } else if (node.querySelectorAll) {
+      node.querySelectorAll("img").forEach(img => {
+        if (targetSrcList.includes(img.src)) {
+          img.alt = "";
+        }
+      });
+    }
+  };
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(setAltIfMatch);
+    });
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("img").forEach(img => {
+      if (targetSrcList.includes(img.src)) {
+        img.alt = "";
+      }
+    });
+  });
+</script>

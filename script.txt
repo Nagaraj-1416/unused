@@ -1,37 +1,325 @@
-<script>
-  const targetSrcList = [
-    "https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg",
-    "https://d3k81ch9hvuctc.cloudfront.net/company/W56RGS/images/0eeee287-e6ca-4faf-b9ac-495684a565ec.jpeg"
-  ];
-
-  const setAltIfMatch = (node) => {
-    if (node.tagName === 'IMG' && targetSrcList.includes(node.src)) {
-      node.alt = "";
-    } else if (node.querySelectorAll) {
-      node.querySelectorAll("img").forEach(img => {
-        if (targetSrcList.includes(img.src)) {
-          img.alt = "";
-        }
-      });
-    }
-  };
-
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      mutation.addedNodes.forEach(setAltIfMatch);
-    });
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("img").forEach(img => {
-      if (targetSrcList.includes(img.src)) {
-        img.alt = "";
-      }
-    });
-  });
-</script>
+<ul class="product-list-wrapper" id="product-list">
+   <div class="promo-grid">
+      {% for block in section.blocks %}
+      {% case block.type %}
+      {% when 'image-promo' %}
+      <div class="promo-item {{ block.settings.custom_class }}">
+         <a href="{{ block.settings.link | default: '#' }}">
+            <picture>
+               <source media="(max-width: 767px)" srcset="{{ block.settings.mobile_image | img_url: 'master' }}">
+               <img src="{{ block.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
+            </picture>
+         </a>
+      </div>
+      {% when 'video-promo' %}
+      <div class="promo-item {{ block.settings.custom_class }}">
+         <a href="{{ block.settings.link | default: '#' }}">
+            <div class="video-wrapper">
+               {% if block.settings.desktop_video contains 'youtube' or block.settings.desktop_video contains 'vimeo' %}
+               <iframe
+                  src="{{ block.settings.desktop_video }}"
+                  frameborder="0"
+                  allowfullscreen
+                  class="desktop-video"
+                  ></iframe>
+               {% endif %}
+               {% if block.settings.mobile_video contains 'youtube' or block.settings.mobile_video contains 'vimeo' %}
+               <iframe
+                  src="{{ block.settings.mobile_video }}"
+                  frameborder="0"
+                  allowfullscreen
+                  class="mobile-video"
+                  ></iframe>
+               {% endif %}
+            </div>
+         </a>
+      </div>
+      {% endcase %}
+      {% endfor %}
+   </div>
+   {%- for product in collection.products -%}
+   <li>
+      <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">
+         {% if product.published_at %}
+         {% if product.metafields.custom.product_family %}
+         <!-- Check if product have product key metafield then added logic of color swatch click in true condition -->
+         {%- assign refer_product_ids = '' -%}
+         {% for refer_product in product.metafields.custom.product_family.value  %}
+         {%- assign refer_product_ids = refer_product_ids | append: refer_product.id | append: ',' -%}
+         {%- endfor -%}
+         {%- assign skip_product = false -%}
+         {%- if refer_product_ids contains product.id -%}
+         {%- assign skip_product = true -%}
+         {%- endif -%}
+         {% for refer_product in product.metafields.custom.product_family.value  %}
+         <div class="product-details product-details-{{ refer_product.id }}" id="product-details-{{ refer_product.id }}" data-product-id="{{ refer_product.id }}" {%- if skip_product == false -%} {% if  forloop.first %} style="display:block;" {% else %} style="display:none;" {% endif %} {% else %}  {% if  refer_product.id != product.id %} style="display:none;" {% endif %} {% endif %}>
+         <div class="product-card-top-wrapper">
+            {% comment %} <a class="product-card" href="{{ refer_product.url | within: collection }}">{% endcomment %}
+            <a class="product-card" href="{{ refer_product.url }}">
+               <div style="height:100%">
+                  <!-- PRODUCT IMAGE -->
+                  {% assign has_men = false %}
+                  {% assign has_women = false %}
+                  {% assign has_unisex = false %}
+                  {% for tag in refer_product.tags %}
+                  {% assign cleaned_tag = tag | downcase | strip %}
+                  {% if cleaned_tag == 'gender:mens' or cleaned_tag == 'gender:men' %}
+                  {% assign has_men = true %}
+                  {% elsif cleaned_tag == 'gender:womens' or cleaned_tag == 'gender:women' %}
+                  {% assign has_women = true %}
+                  {% elsif cleaned_tag == 'gender:unisex' %}
+                  {% assign has_unisex = true %}
+                  {% endif %}
+                  {% endfor %}
+                  {% assign gender = '' %}
+                  {% if has_men and has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                  {% elsif has_men and has_women %}
+                  {% assign gender = 'Unisex' %}
+                  {% elsif has_men and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                  {% elsif has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                  {% elsif has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                  {% elsif has_men %}
+                  {% assign gender = 'Men' %}
+                  {% elsif has_women %}
+                  {% assign gender = 'Women' %}
+                  {% endif %}
+                  <div class="product-asset">
+                     {% assign video_found = false %}
+                     {% for media in refer_product.media %}
+                     {% if media.media_type == 'video' and video_found == false %}
+                     {% assign video_found = true %}
+                     <div class="media-container">
+                        <div class="media-container-overlay"></div>
+                        <img class="desktop-product-image default-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                        <video class="hover-video" muted loop playsinline preload="metadata">
+                           {% for source in media.sources %}
+                           {% if source.format == 'mp4' %}
+                           <source src="{{ source.url }}">
+                           {% endif %}
+                           {% endfor %}
+                        </video>
+                     </div>
+                     {% endif %}
+                     {% endfor %}
+                     {% unless video_found %}
+                     {% if refer_product.images[2].src %}
+                     <img class="desktop-product-image" data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
+                        data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
+                        src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                     <!-- <img class="mobile-product-image"  src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                     {% elsif refer_product.images[1].src and refer_product.template_suffix == 'product-custom' %}
+                     <img class="desktop-product-image" 
+                        data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
+                        data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
+                        src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" /> 
+                     <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" />  -->
+                     {% else %}
+                     <img class="desktop-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                     <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                     {% endif %}
+                     {% endunless %}  
+                  </div>
+               </div>
+               <!-- Add To Wishlist -->
+               <div class="add-to-wishlist-wrapper">
+               </div>
+               <!-- NEW / SOLD OUT LABEL -->
+               {% assign specific_tag = 'Badge:Preorder' %}
+               {% assign specific_tag_value = 'Badge:ComingSoon' %}
+               {% if refer_product.available == false %}
+               {% if product.tags contains 'Badge:Isabella' %}
+               <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+               {% elsif product.tags contains 'Badge:Rachel' %}
+               <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+               {% elsif product.tags contains 'Badge:Stylist' %}
+               <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+               {% elsif product.tags contains specific_tag %}
+               <div class="product-label">PREORDER</div>
+               {% elsif product.tags contains specific_tag_value %}  
+               <div class="product-label badge-mobile-hide">COMING SOON</div>
+               {% else %}
+               {% comment %} 
+               <div class="product-label">SOLD OUT</div>
+               {% endcomment %}
+               {% endif %}
+               {% else %}
+               {% if product.tags contains 'Badge:Isabella' %}
+               <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+               {% elsif product.tags contains 'Badge:Rachel' %}
+               <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+               {% elsif product.tags contains 'Badge:Stylist' %}
+               <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+               {% elsif product.tags contains specific_tag %}
+               <div class="product-label">PREORDER</div>
+               {% else %}  
+               {% for t in refer_product.tags %}
+               {% if t contains 'Badge:BackinStock' %} 
+               <div class="product-label">BACK IN STOCK</div>
+               {% elsif t contains 'smarttag_new_arrival' %} 
+               <div class="product-label">NEW</div>
+               {% endif %}
+               {% endfor %}
+               {% endif %}
+               {% endif %} 
+               <!-- SOLD OUT SECTION -->
+               {% assign specific_tag = 'Badge:Preorder' %}
+               {% assign specific_tag_value = 'Badge:ComingSoon' %}
+               {% if refer_product.available == false %}
+               {% if product.tags contains specific_tag %}
+               <div class="product-status">PREORDER</div>
+               {% elsif product.tags contains specific_tag_value %}  
+               <div class="product-status badge-mobile-hide">COMING SOON</div>
+               {% else %}
+               <div class="product-status">SOLD OUT</div>
+               {% endif %}                
+               {%- endif -%}
+               <!-- BUY SECTION -->
+               {% assign specific_tag = 'Badge:Preorder' %}
+               {% assign specific_tag_value = 'Badge:ComingSoon' %}
+               {% if refer_product.available %}
+               <div class="product-buy-sold-out-section">
+                  {% if refer_product.available == false %}               
+                  {% if product.tags contains specific_tag %}
+                  <div class="product-status">PREORDER</div>
+                  {% elsif product.tags contains specific_tag_value %}  
+                  <div class="product-status badge-mobile-hide">COMING SOON</div>
+                  {% else %}
+                  <div class="product-status">SOLD OUT</div>
+                  {% endif %} 
+                  {% else %}
+                  {% assign specific_tag = 'Badge:Preorder' %}
+                  {% if product.tags contains specific_tag %}
+                  <div class="product-buy-section">
+                     <!-- QUICK BUY BTN -->
+            <a class="product-card" href="{{ refer_product.url }}">
+            <div class="quick-buy-section">
+            <p class="quick-buy-text" >
+            PRE ORDER
+            </p>
+            </div>
+            </a>                
+            <!-- SIZE / ADD TO CART SECTION -->
+            <div class="size-add-to-cart-section">
+            <!-- SIZE SECTION -->
+            {% assign variant_count = refer_product.variants | size %}
+            {% if variant_count > 1 %}
+            <div class="size-section-wrapper">
+            {% if refer_product.options[1] != blank %}
+            <span class="size-title">SIZE</span>
+            {% else %}
+            <span class="size-title">DENOMINATIONS</span>
+            {% endif %}
+            <div class="size-list-container">
+            {% for variant in refer_product.variants %}
+            {% if variant.available %}
+            <div class="variant-info">
+            <form action="/cart/add" method="post">
+            <input type="hidden" name="id" value="{{ variant.id }}" />
+            {% if variant.option2 != blank %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
+            {% else %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
+            {% endif %}
+            </form>
+            </div>
+            {% else %}
+            <div class="variant-info">
+            {% if variant.option2 != blank %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
+            {% else %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
+            {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            </div>
+            </div>
+            <!-- ADD TO CART BTN -->
+            {% else %}
+            <div class="add-to-cart-container">
+            <form action="/cart/add" method="post">
+            <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
+            <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
+            </form>
+            </div>
+            {% endif %}
+            </div>
+            </div>
+            {% else %}
+            <div class="product-buy-section">
+            <!-- QUICK BUY BTN -->
+            <a class="product-card" href="{{ refer_product.url }}">
+            <div class="quick-buy-section">
+            <p class="quick-buy-text" >
+            Quick Buy
+            </p>
+            </div>
+            </a>                
+            <!-- SIZE / ADD TO CART SECTION -->
+            <div class="size-add-to-cart-section">
+            <!-- SIZE SECTION -->
+            {% assign variant_count = refer_product.variants | size %}
+            {% if variant_count > 1 %}
+            <div class="size-section-wrapper">
+            {% if refer_product.options[1] != blank %}
+            <span class="size-title">SIZE</span>
+            {% else %}
+            <span class="size-title">DENOMINATIONS</span>
+            {% endif %}
+            <div class="size-list-container">
+            {% for variant in refer_product.variants %}
+            {% if variant.available %}
+            <div class="variant-info">
+            <form action="/cart/add" method="post">
+            <input type="hidden" name="id" value="{{ variant.id }}" />
+            {% if variant.option2 != blank %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
+            {% else %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
+            {% endif %}
+            </form>
+            </div>
+            {% else %}
+            <div class="variant-info">
+            {% if variant.option2 != blank %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
+            {% else %}
+            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
+            {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            </div>
+            </div>
+            <!-- ADD TO CART BTN -->
+            {% else %}
+            <div class="add-to-cart-container">
+            <form action="/cart/add" method="post">
+            <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
+            <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
+            </form>
+            </div>
+            {% endif %}
+            </div>
+            </div>
+            {% endif %}
+            {% endif %}
+            </div>
+            {%- endif -%}
+            </a>
+         </div>
+         <!-- INFO SECTION -->
+         <div class="product-info-wrapper">
+            <div class="product-details-container">
+            </div>
+         </div>
+      </div>
+      {% endfor %}
+      </div>
+   </li>
+   {%- endfor -%}
+</ul>

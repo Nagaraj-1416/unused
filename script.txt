@@ -323,3 +323,49 @@
    </li>
    {%- endfor -%}
 </ul>
+
+
+
+
+
+
+<ul class="product-list-wrapper" id="product-list">
+  <div class="promo-grid">
+    {%- assign promo_blocks = section.blocks | where: "type", "image-promo" -%}
+    {%- assign promo_count = promo_blocks.size -%}
+    {%- assign promo_index = 0 -%}
+  </div>
+
+  {%- for product in collection.products -%}
+    {% assign current_index = forloop.index0 %}
+
+    {% comment %}
+    Insert banner before product at specific index
+    Example: show banner before 0, 5, 10, etc.
+    {% endcomment %}
+
+    {% if current_index == 0 or current_index == 5 or current_index == 10 or current_index == 15 %}
+      {% assign promo = promo_blocks[promo_index] %}
+      {% if promo %}
+        <li class="promo-banner">
+          <div class="promo-item {{ promo.settings.custom_class }}">
+            <a href="{{ promo.settings.link | default: '#' }}">
+              <picture>
+                <source media="(max-width: 767px)" srcset="{{ promo.settings.mobile_image | img_url: 'master' }}">
+                <img src="{{ promo.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
+              </picture>
+            </a>
+          </div>
+        </li>
+        {% assign promo_index = promo_index | plus: 1 %}
+      {% endif %}
+    {% endif %}
+
+    <!-- PRODUCT ITEM -->
+    <li>
+      <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">
+        <!-- Existing product rendering code remains unchanged -->
+      </div>
+    </li>
+  {%- endfor -%}
+</ul>

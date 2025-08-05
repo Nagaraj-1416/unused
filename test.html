@@ -37,8 +37,33 @@
       {% endcase %}
       {% endfor %}
    </div>
-   {%- for product in collection.products -%}
-   <li>
+   
+  {% assign promo_blocks = section.blocks | where: "type", "image-promo" %}
+  {% assign promo_index = 0 %}
+  {% assign promo_interval_1 = 0 %}
+  {% assign promo_interval_2 = 6 %}
+
+{%- for product in collection.products -%}
+   
+    {% assign current_index = forloop.index0 %}
+    {% if current_index == promo_interval_1 or current_index == promo_interval_2 %}
+      {% assign promo = promo_blocks[promo_index] %}
+      {% if promo %}
+        <li class="promo-banner promo-item {{ promo.settings.custom_class }}">
+          <a href="{{ promo.settings.link | default: '#' }}">
+            <picture>
+              <source media="(max-width: 767px)" srcset="{{ promo.settings.mobile_image | img_url: 'master' }}">
+              <img src="{{ promo.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
+            </picture>
+          </a>
+        </li>
+        {% assign promo_index = promo_index | plus: 1 %}
+        {% assign promo_interval_1 = promo_interval_1 | plus: 8 %}
+        {% assign promo_interval_2 = promo_interval_2 | plus: 8 %}
+      {% endif %}
+    {% endif %}
+
+<li>
       <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">
          {% if product.published_at %}
          {% if product.metafields.custom.product_family %}

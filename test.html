@@ -1,67 +1,27 @@
 <ul class="product-list-wrapper" id="product-list">
-   <div class="promo-grid">
-      {% for block in section.blocks %}
-      {% case block.type %}
-      {% when 'image-promo' %}
-      <div class="promo-item {{ block.settings.custom_class }}">
-         <a href="{{ block.settings.link | default: '#' }}">
-            <picture>
-               <source media="(max-width: 767px)" srcset="{{ block.settings.mobile_image | img_url: 'master' }}">
-               <img src="{{ block.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
-            </picture>
-         </a>
-      </div>
-      {% when 'video-promo' %}
-      <div class="promo-item {{ block.settings.custom_class }}">
-         <a href="{{ block.settings.link | default: '#' }}">
-            <div class="video-wrapper">
-               {% if block.settings.desktop_video contains 'youtube' or block.settings.desktop_video contains 'vimeo' %}
-               <iframe
-                  src="{{ block.settings.desktop_video }}"
-                  frameborder="0"
-                  allowfullscreen
-                  class="desktop-video"
-                  ></iframe>
-               {% endif %}
-               {% if block.settings.mobile_video contains 'youtube' or block.settings.mobile_video contains 'vimeo' %}
-               <iframe
-                  src="{{ block.settings.mobile_video }}"
-                  frameborder="0"
-                  allowfullscreen
-                  class="mobile-video"
-                  ></iframe>
-               {% endif %}
-            </div>
-         </a>
-      </div>
-      {% endcase %}
-      {% endfor %}
-   </div>
    
-  {% assign promo_blocks = section.blocks | where: "type", "image-promo" %}
-  {% assign promo_index = 0 %}
-  {% assign promo_interval_1 = 0 %}
-  {% assign promo_interval_2 = 6 %}
+   
+{% assign promo_blocks = section.blocks | where: "type", "image-promo" %}
+{% assign promo_index = 0 %}
+{% assign promo_insert_positions = '0,6,12,18,24,30' | split: ',' %}
 
 {%- for product in collection.products -%}
    
-    {% assign current_index = forloop.index0 %}
-    {% if current_index == promo_interval_1 or current_index == promo_interval_2 %}
-      {% assign promo = promo_blocks[promo_index] %}
-      {% if promo %}
-        <li class="promo-banner promo-item {{ promo.settings.custom_class }}">
-          <a href="{{ promo.settings.link | default: '#' }}">
-            <picture>
-              <source media="(max-width: 767px)" srcset="{{ promo.settings.mobile_image | img_url: 'master' }}">
-              <img src="{{ promo.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
-            </picture>
-          </a>
-        </li>
-        {% assign promo_index = promo_index | plus: 1 %}
-        {% assign promo_interval_1 = promo_interval_1 | plus: 8 %}
-        {% assign promo_interval_2 = promo_interval_2 | plus: 8 %}
-      {% endif %}
-    {% endif %}
+{% assign current_index = forloop.index0 %}
+{% if promo_insert_positions contains current_index | string %}
+  {% assign promo = promo_blocks[promo_index] %}
+  {% if promo %}
+    <li class="promo-banner promo-item {{ promo.settings.custom_class }}">
+      <a href="{{ promo.settings.link | default: '#' }}">
+        <picture>
+          <source media="(max-width: 767px)" srcset="{{ promo.settings.mobile_image | img_url: 'master' }}">
+          <img src="{{ promo.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
+        </picture>
+      </a>
+    </li>
+    {% assign promo_index = promo_index | plus: 1 %}
+  {% endif %}
+{% endif %}
 
 <li>
       <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">

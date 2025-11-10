@@ -1,371 +1,2840 @@
-<ul class="product-list-wrapper" id="product-list">
-   <div class="promo-grid">
-      {% for block in section.blocks %}
-      {% case block.type %}
-      {% when 'image-promo' %}
-      <div class="promo-item {{ block.settings.custom_class }}">
-         <a href="{{ block.settings.link | default: '#' }}">
-            <picture>
-               <source media="(max-width: 767px)" srcset="{{ block.settings.mobile_image | img_url: 'master' }}">
-               <img src="{{ block.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
-            </picture>
-         </a>
+{% schema %}
+  {
+    "name": "Section name",
+    "settings": []
+  }
+{% endschema %}
+
+<style>
+  .product-list-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 2px !important;
+    row-gap: 32px !important;
+    padding: 10px;
+    margin-left: 0px;
+  }
+  
+  .product-list-full-view {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  
+  .full-view-btn {
+    margin: 5px;
+    width: 15px;
+    height: 15px;
+    background-color: rgb(136, 136, 136);
+    cursor: pointer;
+  }
+  
+  .grid-view-btn {
+    margin: 5px;
+    width: 15px;
+    height: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    cursor: pointer;
+  }
+  
+  .grid-view-btn span {
+    background-color: rgb(136, 136, 136);
+  }
+  
+  .grid-view-btn:hover span,
+  .full-view-btn:hover {
+    background-color: #333333;
+  }
+  
+  .product-collection-title {
+    font-size: 26px;
+    margin: 15px 10px 5px;
+  }
+  
+  /* .product-card-wrapper {
+
+  }
+   */
+  .product-view-container {
+    display: none;
+  }
+  
+  .product-card {
+      text-decoration: none;
+    /* box-sizing: border-box;
+      float: left;
+      min-height: 1em;
+      padding-left: 2em;
+      vertical-align: top;
+      width: 25%; */
+  }
+  
+  .product-info-wrapper {
+    padding: 5px;
+  }
+  
+  .product-details-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .color-variant-wrapper {
+    margin-bottom: 10px;
+  }
+  
+  .color-product-title {
+  }
+  
+  .product-card-top-wrapper {
+    position: relative;
+    flex:1;
+  }
+  
+  .add-to-wishlist-wrapper {
+    position: absolute;
+    right: 18px;
+    top: 10px;
+  }
+  
+  .product-buy-sold-out-section,
+  .product-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+     z-index: 2;
+  }
+
+  .quick-buy-text {
+      font-weight: 500;
+      font-size: 15px;
+  }
+  
+  .quick-buy-section,
+  .product-status {
+    padding: 2px 10px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 3px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    
+  }
+  
+  .product-status:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgb(224, 224, 224);
+    color: rgb(0, 0, 0);
+  }
+
+    .quick-buy-section{
+     opacity:1;
+  }
+  
+  .product-buy-section:hover .quick-buy-section {
+    /* display: none; */
+    opacity:0;
+  }
+  
+  .product-buy-section:hover .size-add-to-cart-section {
+    display: block;
+    /* justify-content: center; */
+    cursor: pointer;
+  }
+  
+  .size-title {
+    color: #777777;
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+  
+  .product-label {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: #000000;
+    color: #ffffff;
+    border-style: none;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+  
+  .size-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .size-add-to-cart-section {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    display: none;
+  }
+  
+  .add-to-cart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .add-to-cart-btn,.size-option-btn {
+    padding: 5px 10px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    border-width: 1px;
+    border-color: rgb(224, 224, 224);
+    border-radius: 3px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 12.75px;
+  }
+  
+  input[disabled].size-option-btn{
+    opacity: 0.5;
+    cursor: default;
+  }
+  
+  .add-to-cart-btn:hover,
+  input:not([disabled]).size-option-btn:hover {
+    background-color: rgb(240, 240, 240);
+    border-color: rgb(224, 224, 224);
+    color: rgb(0, 0, 0);
+  }
+  
+  .color-variant-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .color-variant-swatch img {
+    border-radius: 50%;
+    border: 1px solid #000;
+    height: 20px;
+    width: 20px;
+  }
+  
+  .color-variant {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: black;
+    border: 2px solid black;
+  }
+  
+  .product-title {
+    font-size: 1rem;
+    font-weight: 400;
+    font-family: var(--h3--font-family);
+    color: var(--color--secondary_1);
+    margin-bottom: 16px;
+  }
+  
+  .product-price {
+    color: #ad0000;
+    font-weight: 700;
+  }
+  
+  .product-compare-at-price {
+    color: var(--color--secondary_1);
+  }
+  
+  .visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+  }
+  
+  .hide {
+    display: none;
+  }
+  .product-ratings-container{
+    min-height:17.5px;
+  }
+  .product-ratings-container .yotpo .yotpo-bottomline .yotpo-icon-star{
+      color:rgb(255,51,102) !important;
+    }
+  .product-ratings-container .yotpo .yotpo-bottomline a {
+    display:none;
+  }
+  
+body.collection.handle--m-w-new-arrivals .plp-banner-image-content, body.collection.handle--men .plp-banner-image-content, body.collection.handle--women .plp-banner-image-content,
+  body.collection.handle--shoes  .plp-banner-image-content, body.collection.handle--m-w-accessories .plp-banner-image-content, body.collection.handle--voicewear .plp-banner-image-content, 
+  body.collection.handle--collabs-view-all .plp-banner-image-content, body.collection.handle--men-new-arrivals .plp-banner-image-content, body.collection.handle--women-new-arrivals .plp-banner-image-content{
+      display: block;
+}
+
+  
+  
+  .element-responsive-image{
+      position:relative;
+  }
+  
+  .banner-text{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+  }
+  .banner-title{
+      color:white;
+      font-size:26px;
+      font-weight:500;
+      white-space:nowrap;
+      font-style: normal;
+      line-height: 0;
+      letter-spacing: 0;
+      text-transform: uppercase;
+  }
+
+  .desktop-product-image, .hover-video, .media-container{
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0px;
+    left:0px;
+    
+  }
+  /* .mobile-product-image{
+    display:none;
+  } */
+  .product-asset{
+    height:100%;
+    position:relative;
+    padding-bottom:125%;
+  }
+
+  /* pagination styling  */
+  body[class*=template-collection] .pagination {
+    margin: 0;    
+    padding: 9px 0px;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 5rem;
+  }
+
+  .page, .prev, .next {
+    font-size: small;
+    padding: 5px 10px;
+    margin: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    color: #000;
+    background-color: #fff;
+}
+
+  .page.current {
+    color: #fff;
+    background-color: #000;
+}
+ /* COLLECTION PAGE FILTER STYLING STARTS */
+
+
+ .filter-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-large-row {
+        display: block;
+    }
+
+    .filter-sort-by {
+        font-size: 14px;
+        line-height: 1.4285714286;
+        font-weight: 400;
+        letter-spacing: normal;
+        padding: 12px 16px;
+        border-right: 1px solid #ebebeb;
+    }
+
+
+
+    .filter-medium-row,
+    .filter-small-row {
+        display: none;
+    }
+
+    .collection-page-filter-section .clear-btn {
+        border: 1px solid rgb(224, 224, 224);
+        outline: none;
+        padding: 4px 10px;
+        background: #fff;
+        text-decoration: none;
+    }
+    .collection-page-filter-section .clear-btn:hover{
+        color: #000;
+    }
+
+    .collection-page-filter-section .option-container {
+        padding: 20px 16px;
+        font-size: 15px;
+        border-bottom: 1px solid #ebebeb;
+    }
+
+    .collection-page-filter-section .option-label-outer-container {
+        display: inline-block;
+        width: calc(100% - 16px);
+    }
+
+    .collection-page-filter-section .option-label {
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .collection-page-filter-section .caret-icon {
+        transform: rotate(180deg);
+        display: none;
+    }
+
+    .collection-page-filter-section .option-list-container {
+        padding: 0 10px 0 0;
+        margin: 0;
+        max-height: 214px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .collection-page-filter-section .option-list-container li {
+        list-style: none;
+    }
+
+    .collection-page-filter-section .option-content {
+        position: relative;
+        padding-left: 23px;
+        margin-bottom: 12px;
+        min-height: 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .collection-page-filter-section .option-content label {
+        cursor: pointer;
+    }
+
+    .collection-page-filter-section .option-content::before {
+        content: "";
+        border: 1px solid #2229;
+        box-shadow: none;
+        background: 0 0;
+        border-radius: 1px;
+        width: 15px;
+        height: 15px;
+        transition: none;
+        display: inline-block;
+        position: absolute;
+        top: 2px;
+        left: 0;
+    }
+
+    .collection-page-filter-section .option-content::after {
+        content: "";
+        border: 2px solid #222;
+        background: 0 0;
+        border-top: none;
+        border-right: none;
+        width: 9px;
+        height: 6px;
+        display: none;
+        position: absolute;
+        top: 5px;
+        left: 3px;
+        transform: rotate(-50deg);
+    }
+
+    .collection-page-filter-section .option-content.price-option-content {
+        padding: 0;
+        gap: 12px;
+    }
+
+    .collection-page-filter-section .option-content.price-option-content::before,
+    .collection-page-filter-section .option-content.price-option-content::after {
+        display: none !important;
+    }
+
+    .collection-page-filter-section .price-range-value {
+        display: flex;
+        align-items: center;
+        flex: 1;
+    }
+
+
+    .collection-page-filter-section .price-range-value input {
+        text-align: center;
+        position: relative;
+        padding: 5px 6px 5px 15px;
+        width: 100%;
+    }
+
+    .collection-page-filter-section .price-option-content .slider-range-unit {
+        position: absolute;
+        z-index: 2;
+    }
+
+    .collection-page-filter-section .option-content.option-content-active::after {
+        display: inline-block;
+    }
+
+    .collection-page-filter-section .option-content-active label {
+        font-weight: 600;
+    }
+
+    .collection-page-filter-section .option-content input[type="checkbox"] {
+        display: none;
+    }
+
+    .collection-page-filter-section .filter-sidebar-wrapper {
+        width: 282px;
+        z-index: 15;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        background: #FFF;
+        overflow-y: auto;
+        padding: 0 16px 16px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: visible;
+    }
+
+    .collection-page-filter-section .filter-sidebar-wrapper .filter-form {
+        flex: 1;
+        overflow-y: auto;
+        display: block;
+    }
+
+    .collection-page-filter-section .filter-wrapper,
+    .collection-page-filter-section .mobile-filter-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        display: none;
+    }
+
+    .collection-page-filter-section.active-filter .filter-wrapper {
+        display: block;
+    }
+
+    .collection-page-filter-section.active-filter .mobile-filter-wrapper {
+        display: none;
+    }
+
+    .collection-page-filter-section .filter-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #212b3666;
+        z-index: 10;
+    }
+
+    .collection-page-filter-section .option-container summary {
+        cursor: pointer;
+    }
+
+    .collection-page-filter-section .filter-close-btn {
+        position: absolute;
+        left: 100%;
+        z-index: 15;
+        width: 40px;
+        padding: 4px 10px;
+        background: #fff;
+        outline: none;
+        border: 1px solid rgb(224, 224, 224);
+        cursor: pointer;
+    }
+
+    .collection-page-filter-section .filter-close-btn svg {
+        width: 18px;
+    }
+
+    .collection-page-filter-section .slider-input-wrapper {
+        border: 1px solid #e3e3e3;
+        align-items: center;
+        width: calc(50% - 15px);
+        height: 36px;
+        margin: 0 0 10px;
+        padding: 0;
+        line-height: 1.71429;
+        display: flex;
+        position: relative;
+    }
+
+    .collection-page-filter-section .slider-input-wrapper input {
+        line-height: 20px;
+        letter-spacing: normal;
+        text-align: center;
+        text-indent: 0;
+        box-shadow: none;
+        background: 0 0;
+        border: none;
+        outline: none;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 5px 6px 5px 0;
+        font-weight: 400;
+    }
+
+    .collection-page-filter-section .slider-input-split {
+        margin: 0 0 10px;
+    }
+
+    .collection-page-filter-section .filter-price-range-container {
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        display: flex;
+    }
+
+    .collection-page-filter-section .slider-range-unit {
+        letter-spacing: normal;
+        color: inherit;
+        white-space: nowrap;
+        padding-left: 6px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857;
+    }
+
+    .filter-open-btn {
+        border-right: 1px solid #ebebeb;
+        padding: 0 24px 0 0;
+        flex: none;
+        font-size: inherit;
+        line-height: inherit;
+        letter-spacing: normal;
+        padding: 0 24px 0 0;
+        cursor: pointer;
+        background: 0 0;
+        flex: 0 0 50%;
+        justify-content: space-between;
+        align-items: center;
+        width: auto;
+        max-width: 50%;
+        font-weight: 400;
+        display: flex;
+    }
+
+    .filter-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        order: 0;
+        margin-right: 10px;
+        width: 20px;
+        display: block;
+    }
+
+    .filter-open-btn-text {
+        font-size: 14px;
+        color: #222222;
+        line-height: 1.42857;
+        letter-spacing: normal;
+        text-align: left;
+        font-weight: 400;
+    }
+    .boost-pfs-filter-show-result{
+     width: 100%;
+        outline: none;
+        border: 1px solid rgb(224, 224, 224);
+        padding: 4px 10px;
+        background-color: rgb(255, 255, 255);
+        color: #000;
+        font-size: 14px;
+        cursor: pointer;
+        /* margin-top: 16px; */
+        margin-bottom: 42px;
+    }
+
+    .collection-page-filter-section .show-result-btn {
+        display: none !important;
+        width: 100%;
+        outline: none;
+        border: 1px solid rgb(224, 224, 224);
+        padding: 4px 10px;
+        background-color: rgb(255, 255, 255);
+        color: #000;
+        font-size: 14px;
+        cursor: pointer;
+        /* margin-top: 16px; */
+        margin-bottom: 42px;
+    }
+
+    .collection-page-filter-section .filter-sidebar-header {
+        background-color: #fff;
+        border-bottom: 1px solid #e8e9eb;
+        grid-template-columns: 50px 1fr 70px;
+        padding: 10px 16px 9px;
+        display: grid;
+        box-sizing: border-box;
+        align-items: center;
+    }
+
+    .collection-page-filter-section #filter-sidebar-header-text {
+        font-size: 14px;
+        line-height: 1.42857;
+        font-weight: 600;
+        letter-spacing: normal;
+        color: #222;
+        text-transform: uppercase;
+        text-align: center;
+        height: auto;
+        padding-left: 10px;
+        overflow: hidden;
+    }
+
+    .collection-page-filter-section .filter-back-btn {
+        padding: 4px 10px;
+        border: 1px solid rgb(224, 224, 224);
+        background: none;
+        width: 50px;
+        justify-content: flex-start;
+        align-items: center;
+        cursor: pointer;
+        display: none;
+    }
+
+    .collection-page-filter-section #clear-all-filter-header-btn {
+        /* display: inline-block; */
+        background: none;
+        outline: none;
+        border: 1px solid rgb(224, 224, 224);
+        font-size: 14px;
+        line-height: 1.42857;
+        text-wrap: nowrap;
+        padding: 4px 10px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .collection-page-filter-section #mobile-sidebar-option-wrapper {
+        margin: 20px;
+        flex: 1;
+        scrollbar-width: thin;
+        overflow-y: auto;
+        display: none;
+    }
+
+    .collection-page-filter-section #mobile-sidebar-option-wrapper>.option-list-container {
+        overflow: hidden;
+        max-height: none;
+    }
+
+    .collection-page-filter-section .mobile-filter-wrapper .filter-form .option-list-container {
+        display: none;
+    }
+
+    .collection-page-filter-section .mobile-filter-wrapper .filter-form .clear-btn-container {
+        display: none;
+    }
+
+
+
+    /* MOBILE FILTER  */
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper {
+        width: 282px;
+        z-index: 15;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: #FFF;
+        overflow-y: auto;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: visible;
+        left: 0;
+        width: min(375px, 100vw - 60px);
+        max-width: calc(100vw - 60px);
+        padding: 0 0 16px 0;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper .filter-form {
+        flex: 1;
+        overflow-y: auto;
+        display: block;
+    }
+
+    .collection-page-filter-section .mobile-filter-close-btn {
+        left: 100%;
+        position: absolute;
+        z-index: 15;
+        width: 40px;
+        padding: 4px 10px;
+        background: #fff;
+        outline: none;
+        border: 1px solid rgb(224, 224, 224);
+        cursor: pointer;
+    }
+
+    .collection-page-filter-section .mobile-filter-close-btn svg {
+        width: 18px;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper .option-container summary {
+        display: flex;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper .option-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper .caret-icon {
+        display: inline-block;
+    }
+
+    .collection-page-filter-section .show-mobile-sidebar-options-view .filter-form {
+        display: none;
+    }
+
+    .collection-page-filter-section .show-mobile-sidebar-options-view #mobile-sidebar-option-wrapper {
+        display: block;
+    }
+
+    .collection-page-filter-section .show-mobile-sidebar-options-view .filter-back-btn {
+        display: flex;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper:not(.show-mobile-sidebar-options-view) .clear-all-filter-outer-container {
+        display: inline-block;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper:not(.show-mobile-sidebar-options-view) .clear-filter-outer-container {
+        display: none;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper.show-mobile-sidebar-options-view .clear-all-filter-outer-container {
+        display: none;
+    }
+
+    .collection-page-filter-section .mobile-filter-sidebar-wrapper.show-mobile-sidebar-options-view .clear-filter-outer-container {
+        display: inline-block;
+    }
+    /*Ticket 282*/
+    .hover-video{
+      display: none;
+      top: -8px !important; 
+      transform: scale(0.99);
+    }
+    .media-container-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+  /*Ticket 282*/
+
+    /* COLLECTION PAGE FILTER STYLING ENDS */
+
+    @media only screen and (max-width: 991px) {
+
+        .collection-page-filter-section.active-filter .mobile-filter-wrapper {
+            display: block;
+        }
+
+        .collection-page-filter-section.active-filter .filter-wrapper {
+            display: none;
+        }
+    }
+  @media screen and (max-width: 1200px){
+    /* .mobile-product-image{
+      display:inline-block;
+    }
+    .desktop-product-image{
+      display:none;
+    } */
+  }
+  
+  @media screen and (max-width: 767px) {
+    .product-list-wrapper {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .product-view-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 10px;
+      gap: 5px;
+    }
+
+    .badge-mobile-hide {
+      display: none;
+    }
+
+    .collection-page-filter-section.active-filter .mobile-filter-wrapper {
+      top : calc(116px + 58px) !important;
+    }
+  }
+  @media (min-width: 481px) and (max-width: 768px){
+     .banner-title{
+       font-size:18px
+     }
+      .product-buy-section:hover .size-add-to-cart-section{
+        display:none;
+      }
+   }  
+  
+  @media screen and (max-width: 480px){
+     .banner-title{
+       font-size:16px;
+     }
+      .product-buy-section:hover .size-add-to-cart-section{
+        display:none;
+      }
+   }  
+
+   .yotpo .standalone-bottomline.star-clickable, .yotpo .standalone-bottomline .star-clickable {
+      cursor: default !important;
+   }
+
+  .loading-text {
+    font-size: 16px;
+    color: #999;
+    display: block; /* Show text by default */
+}
+
+.loading-container {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between text and spinner */
+    }
+
+    .spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid #ccc;
+        border-top: 2px solid #000;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  
+  </style>
+
+  {% comment %} Ticket 307 start {% endcomment %}
+  {% comment %}
+  {% if collection.handle contains 'men' or collection.handle == 'accessories'  %}
+    {% unless collection.handle contains 'women' or collection.handle contains 'mental' %}
+  <div class="banner-background test" style="z-index: 9999;">
+      <div data-element-id="element_" class="element element-responsive-image" data-name="ResponsiveImage">
+        <picture>
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/461350_KC_Site_Banner_-_30_Off_Promo_Mobile_V2.jpg?v=1748265107"
+            media="(max-width: 320px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/461350_KC_Site_Banner_-_30_Off_Promo_Mobile_V2.jpg?v=1748265107"
+            media="(max-width: 640px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/461350_KC_Site_Banner_-_30_Off_Promo_Mobile_V2.jpg?v=1748265107"
+            media="(max-width: 767px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/461350_KC_Site_Banner_-30_Off_Promo_Desktop_V2.jpg?v=1748265049"
+            media="(max-width: 1280px)">
+          <img src="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/461350_KC_Site_Banner_-30_Off_Promo_Desktop_V2.jpg?v=1748265049" alt="Men's"
+            style="width: 100%; height: auto;" data-uw-rm-alt-original="Men's" data-uw-rm-alt="ALT">
+        </picture>
       </div>
-      {% when 'video-promo' %}
-      <div class="promo-item {{ block.settings.custom_class }}">
-         <a href="{{ block.settings.link | default: '#' }}">
-            <div class="video-wrapper">
-               {% if block.settings.desktop_video contains 'youtube' or block.settings.desktop_video contains 'vimeo' %}
-               <iframe
-                  src="{{ block.settings.desktop_video }}"
-                  frameborder="0"
-                  allowfullscreen
-                  class="desktop-video"
-                  ></iframe>
-               {% endif %}
-               {% if block.settings.mobile_video contains 'youtube' or block.settings.mobile_video contains 'vimeo' %}
-               <iframe
-                  src="{{ block.settings.mobile_video }}"
-                  frameborder="0"
-                  allowfullscreen
-                  class="mobile-video"
-                  ></iframe>
-               {% endif %}
-            </div>
-         </a>
+    </div>
+    {% endunless %}
+  {% endif %}
+  {% endcomment %}
+  {% comment %} Ticket 307 start {% endcomment %}
+
+  
+  <a class="hide plp-banner-image-content" href="#">
+    <div class="banner-content" style="position: absolute;">
+      <div class="placement-plp-banner-test" style="display: none;">
       </div>
-      {% endcase %}
-      {% endfor %}
-   </div>
-   {%- for product in collection.products -%}
-   <li>
-      <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">
-         {% if product.published_at %}
-         {% if product.metafields.custom.product_family %}
-         <!-- Check if product have product key metafield then added logic of color swatch click in true condition -->
-         {%- assign refer_product_ids = '' -%}
-         {% for refer_product in product.metafields.custom.product_family.value  %}
-         {%- assign refer_product_ids = refer_product_ids | append: refer_product.id | append: ',' -%}
-         {%- endfor -%}
-         {%- assign skip_product = false -%}
-         {%- if refer_product_ids contains product.id -%}
-         {%- assign skip_product = true -%}
-         {%- endif -%}
-         {% for refer_product in product.metafields.custom.product_family.value  %}
-         <div class="product-details product-details-{{ refer_product.id }}" id="product-details-{{ refer_product.id }}" data-product-id="{{ refer_product.id }}" {%- if skip_product == false -%} {% if  forloop.first %} style="display:block;" {% else %} style="display:none;" {% endif %} {% else %}  {% if  refer_product.id != product.id %} style="display:none;" {% endif %} {% endif %}>
-         <div class="product-card-top-wrapper">
-            {% comment %} <a class="product-card" href="{{ refer_product.url | within: collection }}">{% endcomment %}
-            <a class="product-card" href="{{ refer_product.url }}">
-               <div style="height:100%">
-                  <!-- PRODUCT IMAGE -->
-                  {% assign has_men = false %}
-                  {% assign has_women = false %}
-                  {% assign has_unisex = false %}
-                  {% for tag in refer_product.tags %}
-                  {% assign cleaned_tag = tag | downcase | strip %}
-                  {% if cleaned_tag == 'gender:mens' or cleaned_tag == 'gender:men' %}
-                  {% assign has_men = true %}
-                  {% elsif cleaned_tag == 'gender:womens' or cleaned_tag == 'gender:women' %}
-                  {% assign has_women = true %}
-                  {% elsif cleaned_tag == 'gender:unisex' %}
-                  {% assign has_unisex = true %}
-                  {% endif %}
-                  {% endfor %}
-                  {% assign gender = '' %}
-                  {% if has_men and has_women and has_unisex %}
-                  {% assign gender = 'Unisex' %}
-                  {% elsif has_men and has_women %}
-                  {% assign gender = 'Unisex' %}
-                  {% elsif has_men and has_unisex %}
-                  {% assign gender = 'Unisex' %}
-                  {% elsif has_women and has_unisex %}
-                  {% assign gender = 'Unisex' %}
-                  {% elsif has_unisex %}
-                  {% assign gender = 'Unisex' %}
-                  {% elsif has_men %}
-                  {% assign gender = 'Men' %}
-                  {% elsif has_women %}
-                  {% assign gender = 'Women' %}
-                  {% endif %}
-                  <div class="product-asset">
-                     {% assign video_found = false %}
-                     {% for media in refer_product.media %}
-                     {% if media.media_type == 'video' and video_found == false %}
-                     {% assign video_found = true %}
-                     <div class="media-container">
-                        <div class="media-container-overlay"></div>
-                        <img class="desktop-product-image default-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
-                        <video class="hover-video" muted loop playsinline preload="metadata">
-                           {% for source in media.sources %}
-                           {% if source.format == 'mp4' %}
-                           <source src="{{ source.url }}">
-                           {% endif %}
-                           {% endfor %}
-                        </video>
-                     </div>
-                     {% endif %}
-                     {% endfor %}
-                     {% unless video_found %}
-                     {% if refer_product.images[2].src %}
-                     <img class="desktop-product-image" data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
-                        data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
-                        src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
-                     <!-- <img class="mobile-product-image"  src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
-                     {% elsif refer_product.images[1].src and refer_product.template_suffix == 'product-custom' %}
-                     <img class="desktop-product-image" 
-                        data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
-                        data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
-                        src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" /> 
-                     <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" />  -->
-                     {% else %}
-                     <img class="desktop-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
-                     <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
-                     {% endif %}
-                     {% endunless %}  
-                  </div>
-               </div>
-               <!-- Add To Wishlist -->
-               <div class="add-to-wishlist-wrapper">
-               </div>
-               <!-- NEW / SOLD OUT LABEL -->
-               {% assign specific_tag = 'Badge:Preorder' %}
-               {% assign specific_tag_value = 'Badge:ComingSoon' %}
-               {% if refer_product.available == false %}
-               {% if product.tags contains 'Badge:Isabella' %}
-               <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
-               {% elsif product.tags contains 'Badge:Rachel' %}
-               <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
-               {% elsif product.tags contains 'Badge:Stylist' %}
-               <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
-               {% elsif product.tags contains specific_tag %}
-               <div class="product-label">PREORDER</div>
-               {% elsif product.tags contains specific_tag_value %}  
-               <div class="product-label badge-mobile-hide">COMING SOON</div>
-               {% else %}
-               {% comment %} 
-               <div class="product-label">SOLD OUT</div>
-               {% endcomment %}
-               {% endif %}
-               {% else %}
-               {% if product.tags contains 'Badge:Isabella' %}
-               <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
-               {% elsif product.tags contains 'Badge:Rachel' %}
-               <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
-               {% elsif product.tags contains 'Badge:Stylist' %}
-               <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
-               {% elsif product.tags contains specific_tag %}
-               <div class="product-label">PREORDER</div>
-               {% else %}  
-               {% for t in refer_product.tags %}
-               {% if t contains 'Badge:BackinStock' %} 
-               <div class="product-label">BACK IN STOCK</div>
-               {% elsif t contains 'smarttag_new_arrival' %} 
-               <div class="product-label">NEW</div>
-               {% endif %}
-               {% endfor %}
-               {% endif %}
-               {% endif %} 
-               <!-- SOLD OUT SECTION -->
-               {% assign specific_tag = 'Badge:Preorder' %}
-               {% assign specific_tag_value = 'Badge:ComingSoon' %}
-               {% if refer_product.available == false %}
-               {% if product.tags contains specific_tag %}
-               <div class="product-status">PREORDER</div>
-               {% elsif product.tags contains specific_tag_value %}  
-               <div class="product-status badge-mobile-hide">COMING SOON</div>
-               {% else %}
-               <div class="product-status">SOLD OUT</div>
-               {% endif %}                
-               {%- endif -%}
-               <!-- BUY SECTION -->
-               {% assign specific_tag = 'Badge:Preorder' %}
-               {% assign specific_tag_value = 'Badge:ComingSoon' %}
-               {% if refer_product.available %}
-               <div class="product-buy-sold-out-section">
-                  {% if refer_product.available == false %}               
-                  {% if product.tags contains specific_tag %}
-                  <div class="product-status">PREORDER</div>
-                  {% elsif product.tags contains specific_tag_value %}  
-                  <div class="product-status badge-mobile-hide">COMING SOON</div>
-                  {% else %}
-                  <div class="product-status">SOLD OUT</div>
-                  {% endif %} 
-                  {% else %}
-                  {% assign specific_tag = 'Badge:Preorder' %}
-                  {% if product.tags contains specific_tag %}
-                  <div class="product-buy-section">
-                     <!-- QUICK BUY BTN -->
-            <a class="product-card" href="{{ refer_product.url }}">
-            <div class="quick-buy-section">
-            <p class="quick-buy-text" >
-            PRE ORDER
-            </p>
-            </div>
-            </a>                
-            <!-- SIZE / ADD TO CART SECTION -->
-            <div class="size-add-to-cart-section">
-            <!-- SIZE SECTION -->
-            {% assign variant_count = refer_product.variants | size %}
-            {% if variant_count > 1 %}
-            <div class="size-section-wrapper">
-            {% if refer_product.options[1] != blank %}
-            <span class="size-title">SIZE</span>
-            {% else %}
-            <span class="size-title">DENOMINATIONS</span>
-            {% endif %}
-            <div class="size-list-container">
-            {% for variant in refer_product.variants %}
-            {% if variant.available %}
-            <div class="variant-info">
-            <form action="/cart/add" method="post">
-            <input type="hidden" name="id" value="{{ variant.id }}" />
-            {% if variant.option2 != blank %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
-            {% else %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
-            {% endif %}
-            </form>
-            </div>
-            {% else %}
-            <div class="variant-info">
-            {% if variant.option2 != blank %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
-            {% else %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
-            {% endif %}
-            </div>
-            {% endif %}
-            {% endfor %}
-            </div>
-            </div>
-            <!-- ADD TO CART BTN -->
-            {% else %}
-            <div class="add-to-cart-container">
-            <form action="/cart/add" method="post">
-            <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
-            <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
-            </form>
-            </div>
-            {% endif %}
-            </div>
-            </div>
-            {% else %}
-            <div class="product-buy-section">
-            <!-- QUICK BUY BTN -->
-            <a class="product-card" href="{{ refer_product.url }}">
-            <div class="quick-buy-section">
-            <p class="quick-buy-text" >
-            Quick Buy
-            </p>
-            </div>
-            </a>                
-            <!-- SIZE / ADD TO CART SECTION -->
-            <div class="size-add-to-cart-section">
-            <!-- SIZE SECTION -->
-            {% assign variant_count = refer_product.variants | size %}
-            {% if variant_count > 1 %}
-            <div class="size-section-wrapper">
-            {% if refer_product.options[1] != blank %}
-            <span class="size-title">SIZE</span>
-            {% else %}
-            <span class="size-title">DENOMINATIONS</span>
-            {% endif %}
-            <div class="size-list-container">
-            {% for variant in refer_product.variants %}
-            {% if variant.available %}
-            <div class="variant-info">
-            <form action="/cart/add" method="post">
-            <input type="hidden" name="id" value="{{ variant.id }}" />
-            {% if variant.option2 != blank %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
-            {% else %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
-            {% endif %}
-            </form>
-            </div>
-            {% else %}
-            <div class="variant-info">
-            {% if variant.option2 != blank %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
-            {% else %}
-            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
-            {% endif %}
-            </div>
-            {% endif %}
-            {% endfor %}
-            </div>
-            </div>
-            <!-- ADD TO CART BTN -->
-            {% else %}
-            <div class="add-to-cart-container">
-            <form action="/cart/add" method="post">
-            <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
-            <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
-            </form>
-            </div>
-            {% endif %}
-            </div>
-            </div>
-            {% endif %}
-            {% endif %}
-            </div>
-            {%- endif -%}
-            </a>
-         </div>
-         <!-- INFO SECTION -->
-         <div class="product-info-wrapper">
-            <div class="product-details-container">
-            </div>
-         </div>
+    </div>
+    <div class="banner-background" style="z-index: 9999;">
+      <div data-element-id="element_" class="element element-responsive-image" data-name="ResponsiveImage">
+        <picture>
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/city_320.jpg?v=1713424551"
+            media="(max-width: 320px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/city_640.jpg?v=1713424552"
+            media="(max-width: 640px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/city_768.jpg?v=1713424551"
+            media="(max-width: 768px)">
+          <source srcset="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/city_1280.jpg?v=1713424552"
+            media="(max-width: 1280px)">
+          <img src="https://cdn.shopify.com/s/files/1/0571/5122/6063/files/city_1280.jpg?v=1713424552" alt="Men's"
+            style="width: 100%; height: auto;" data-uw-rm-alt-original="Men's" data-uw-rm-alt="ALT">
+        </picture>
+        <div class="banner-text">
+          <span class="banner-title">{{ collection.title }}</span>
+        </div>
       </div>
-      {% endfor %}
-      </div>
-   </li>
-   {%- endfor -%}
-</ul>
+  
+    </div>
+  </a>
+  
+  
 
-
-
-
-
-
-<ul class="product-list-wrapper" id="product-list">
-  <div class="promo-grid">
-    {%- assign promo_blocks = section.blocks | where: "type", "image-promo" -%}
-    {%- assign promo_count = promo_blocks.size -%}
-    {%- assign promo_index = 0 -%}
+  <h1 class="product-collection-title">{{ collection.title }}</h1>
+  <div id="Breadcrumb" class="w-full md:my-6 my-0">
+    <div class="content-main-area flex flex-row p-3 md:p-0 container pl-6 md:pl-6">
+      <span>{% render 'breadcrumb' %}</span>
+      <span>{% render 'content-block-breadcrumb' %}</span>
+    </div>
   </div>
 
-  {%- for product in collection.products -%}
-    {% assign current_index = forloop.index0 %}
+  <!-- FILTER BTN -->
 
-    {% comment %}
-    Insert banner before product at specific index
-    Example: show banner before 0, 5, 10, etc.
-    {% endcomment %}
+{% comment %} <div class="boost-pfs-filter-tree boost-pfs-filter-tree-v"></div> {% endcomment %}
+{% comment %} <div class="boost-pfs-filter-tree boost-pfs-filter-tree-h"></div> {% endcomment %}
+<div class="boost-pfs-filter-tree-mobile-button" ></div>
+<div class="boost-pfs-filter-top-sorting"></div>
 
-    {% if current_index == 0 or current_index == 5 or current_index == 10 or current_index == 15 %}
-      {% assign promo = promo_blocks[promo_index] %}
-      {% if promo %}
-        <li class="promo-banner">
-          <div class="promo-item {{ promo.settings.custom_class }}">
-            <a href="{{ promo.settings.link | default: '#' }}">
-              <picture>
-                <source media="(max-width: 767px)" srcset="{{ promo.settings.mobile_image | img_url: 'master' }}">
-                <img src="{{ promo.settings.desktop_image | img_url: 'master' }}" alt="Promo Image">
-              </picture>
-            </a>
-          </div>
-        </li>
-        {% assign promo_index = promo_index | plus: 1 %}
-      {% endif %}
-    {% endif %}
+<button type="button" class="filter-open-btn filter-toggle-btn" style="margin:24px">
+    <span class="filter-icon">
 
-    <!-- PRODUCT ITEM -->
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="boost-sd__filter-tree-toggle-button-icon--open" fill-rule="evenodd" clip-rule="evenodd"
+                d="M0.8 3.2H3.348C3.6792 4.1288 4.5584 4.8 5.6 4.8C6.6416 4.8 7.5208 4.1288 7.852 3.2H15.2C15.6424 3.2 16 2.8424 16 2.4C16 1.9576 15.6424 1.6 15.2 1.6H7.852C7.5208 0.6712 6.6416 0 5.6 0C4.5584 0 3.6792 0.6712 3.348 1.6H0.8C0.3576 1.6 0 1.9576 0 2.4C0 2.8424 0.3576 3.2 0.8 3.2ZM15.2 12.8H7.852C7.5208 11.8712 6.6416 11.2 5.6 11.2C4.5584 11.2 3.6792 11.8712 3.348 12.8H0.8C0.3576 12.8 0 13.1576 0 13.6C0 14.0424 0.3576 14.4 0.8 14.4H3.348C3.6792 15.3288 4.5584 16 5.6 16C6.6416 16 7.5208 15.3288 7.852 14.4H15.2C15.6424 14.4 16 14.0424 16 13.6C16 13.1576 15.6424 12.8 15.2 12.8ZM15.2 7.2H12.652C12.3208 6.2712 11.4416 5.6 10.4 5.6C9.3584 5.6 8.4792 6.2712 8.148 7.2H0.8C0.3576 7.2 0 7.5576 0 8C0 8.4424 0.3576 8.8 0.8 8.8H8.148C8.4792 9.7288 9.3584 10.4 10.4 10.4C11.4416 10.4 12.3208 9.7288 12.652 8.8H15.2C15.6424 8.8 16 8.4424 16 8C16 7.5576 15.6424 7.2 15.2 7.2ZM5.6 1.6C6.0416 1.6 6.4 1.9584 6.4 2.4C6.4 2.8416 6.0416 3.2 5.6 3.2C5.1584 3.2 4.8 2.8416 4.8 2.4C4.8 1.9584 5.1584 1.6 5.6 1.6ZM5.6 14.4C5.1584 14.4 4.8 14.0416 4.8 13.6C4.8 13.1584 5.1584 12.8 5.6 12.8C6.0416 12.8 6.4 13.1584 6.4 13.6C6.4 14.0416 6.0416 14.4 5.6 14.4ZM10.4 8.8C9.9584 8.8 9.6 8.4416 9.6 8C9.6 7.5584 9.9584 7.2 10.4 7.2C10.8416 7.2 11.2 7.5584 11.2 8C11.2 8.4416 10.8416 8.8 10.4 8.8Z"
+                fill="#222222"></path>
+            <!-- <path class="boost-sd__filter-tree-toggle-button-icon--close" fill-rule="evenodd" clip-rule="evenodd" d="M9.13062 8.00003L12.565 4.56563C12.8778 4.25283 12.8778 3.74723 12.565 3.43443C12.2522 3.12163 11.7466 3.12163 11.4338 3.43443L7.99942 6.86883L4.56502 3.43443C4.25222 3.12163 3.74662 3.12163 3.43382 3.43443C3.12102 3.74723 3.12102 4.25283 3.43382 4.56563L6.86822 8.00003L3.43382 11.4344C3.12102 11.7472 3.12102 12.2528 3.43382 12.5656C3.58982 12.7216 3.79462 12.8 3.99942 12.8C4.20422 12.8 4.40902 12.7216 4.56502 12.5656L7.99942 9.13123L11.4338 12.5656C11.5898 12.7216 11.7946 12.8 11.9994 12.8C12.2042 12.8 12.409 12.7216 12.565 12.5656C12.8778 12.2528 12.8778 11.7472 12.565 11.4344L9.13062 8.00003Z" fill="#222222"></path> -->
+            <mask id="mask0_8095:39389" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M0.8 3.2H3.348C3.6792 4.1288 4.5584 4.8 5.6 4.8C6.6416 4.8 7.5208 4.1288 7.852 3.2H15.2C15.6424 3.2 16 2.8424 16 2.4C16 1.9576 15.6424 1.6 15.2 1.6H7.852C7.5208 0.6712 6.6416 0 5.6 0C4.5584 0 3.6792 0.6712 3.348 1.6H0.8C0.3576 1.6 0 1.9576 0 2.4C0 2.8424 0.3576 3.2 0.8 3.2ZM15.2 12.8H7.852C7.5208 11.8712 6.6416 11.2 5.6 11.2C4.5584 11.2 3.6792 11.8712 3.348 12.8H0.8C0.3576 12.8 0 13.1576 0 13.6C0 14.0424 0.3576 14.4 0.8 14.4H3.348C3.6792 15.3288 4.5584 16 5.6 16C6.6416 16 7.5208 15.3288 7.852 14.4H15.2C15.6424 14.4 16 14.0424 16 13.6C16 13.1576 15.6424 12.8 15.2 12.8ZM15.2 7.2H12.652C12.3208 6.2712 11.4416 5.6 10.4 5.6C9.3584 5.6 8.4792 6.2712 8.148 7.2H0.8C0.3576 7.2 0 7.5576 0 8C0 8.4424 0.3576 8.8 0.8 8.8H8.148C8.4792 9.7288 9.3584 10.4 10.4 10.4C11.4416 10.4 12.3208 9.7288 12.652 8.8H15.2C15.6424 8.8 16 8.4424 16 8C16 7.5576 15.6424 7.2 15.2 7.2ZM5.6 1.6C6.0416 1.6 6.4 1.9584 6.4 2.4C6.4 2.8416 6.0416 3.2 5.6 3.2C5.1584 3.2 4.8 2.8416 4.8 2.4C4.8 1.9584 5.1584 1.6 5.6 1.6ZM5.6 14.4C5.1584 14.4 4.8 14.0416 4.8 13.6C4.8 13.1584 5.1584 12.8 5.6 12.8C6.0416 12.8 6.4 13.1584 6.4 13.6C6.4 14.0416 6.0416 14.4 5.6 14.4ZM10.4 8.8C9.9584 8.8 9.6 8.4416 9.6 8C9.6 7.5584 9.9584 7.2 10.4 7.2C10.8416 7.2 11.2 7.5584 11.2 8C11.2 8.4416 10.8416 8.8 10.4 8.8Z"
+                    fill="white"></path>
+            </mask>
+            <g mask="url(#mask0_8095:39389)"></g>
+        </svg>
+    </span>
+    <span class="filter-open-btn-text">Filter</span>
+</button>
+
+
+<!-- FILTER SECTION -->
+<section class="collection-page-filter-section">
+
+    <!-- Desktop Filter -->
+    <div class="filter-wrapper">
+
+
+        <div class="filter-sidebar-wrapper">
+            <!-- Close Btn -->
+            <button class="filter-close-btn filter-toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                    aria-labelledby="Close">
+                    <title id="Close" hidden="">Close</title>
+                    <rect width="40" height="40" fill="#222222"></rect>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M21.4143 20L27.7072 13.707C28.0982 13.316 28.0982 12.684 27.7072 12.293C27.3162 11.902 26.6842 11.902 26.2933 12.293L20.0002 18.586L13.7072 12.293C13.3162 11.902 12.6842 11.902 12.2932 12.293C11.9022 12.684 11.9022 13.316 12.2932 13.707L18.5862 20L12.2932 26.293C11.9022 26.684 11.9022 27.316 12.2932 27.707C12.4882 27.902 12.7442 28 13.0002 28C13.2563 28 13.5122 27.902 13.7072 27.707L20.0002 21.414L26.2933 27.707C26.4882 27.902 26.7443 28 27.0002 28C27.2562 28 27.5122 27.902 27.7072 27.707C28.0982 27.316 28.0982 26.684 27.7072 26.293L21.4143 20Z"
+                        fill="white"></path>
+                    <mask id="mask0_21_1009" maskUnits="userSpaceOnUse" x="12" y="11" width="17" height="17">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M21.4143 20L27.7072 13.707C28.0982 13.316 28.0982 12.684 27.7072 12.293C27.3162 11.902 26.6842 11.902 26.2933 12.293L20.0002 18.586L13.7072 12.293C13.3162 11.902 12.6842 11.902 12.2932 12.293C11.9022 12.684 11.9022 13.316 12.2932 13.707L18.5862 20L12.2932 26.293C11.9022 26.684 11.9022 27.316 12.2932 27.707C12.4882 27.902 12.7442 28 13.0002 28C13.2563 28 13.5122 27.902 13.7072 27.707L20.0002 21.414L26.2933 27.707C26.4882 27.902 26.7443 28 27.0002 28C27.2562 28 27.5122 27.902 27.7072 27.707C28.0982 27.316 28.0982 26.684 27.7072 26.293L21.4143 20Z"
+                            fill="white"></path>
+                    </mask>
+                    <g mask="url(#mask0_21_1009)"></g>
+                </svg>
+            </button>
+
+            <!-- Filter Form -->
+            <form class="filter-form">
+              <div class="boost-pfs-filter-tree boost-pfs-filter-tree-v"></div>
+                {% comment %} {%- for filter in collection.filters -%}
+                <details class="option-container">
+                    <summary>
+
+                        <div class="option-label-outer-container">
+
+                            <div class="option-label">
+
+                                <span>{{ filter.label }}</span>
+
+                                {%- if filter.type == "price_range" -%}
+                                {%- if filter.min_value.value or filter.max_value.value -%}
+                                <p data-filter-count="1" class="clear-btn-container">
+                                    <a class="clear-btn" href="{{ filter.url_to_remove }}">
+                                        Clear
+                                    </a>
+                                </p>
+                                {%- endif -%}
+                                {%- else -%}
+                                <p data-filter-count="{{ filter.active_values.size }}" class="clear-btn-container">
+                                    <a class="clear-btn" href="{{ filter.url_to_remove }}">
+                                        Clear
+                                    </a>
+                                </p>
+                                {%- endif -%}
+
+
+                            </div>
+                        </div>
+
+                    </summary>
+
+                    <div>
+                        <div>
+                            <!-- <p>{{ filter.active_values.size }} selected</p> -->
+                            {%- if filter.active_values.size > 0 -%}
+                            <!-- <p><a href="{{ filter.url_to_remove }}">Reset</a></p> -->
+                            {%- endif -%}
+                        </div>
+                        {%- case filter.type -%}
+                        {%- when 'boolean' -%}
+                        <ul class="option-list-container">
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ filter.true_value.value }}">
+                                    <input type="checkbox" name="{{ filter.param_name }}"
+                                        value="{{ filter.true_value.value }}" id="Filter-{{ filter.param_name }}" {% if
+                                        filter.true_value.active -%}checked{%- endif %} {% if filter.true_value.count==0
+                                        and filter.true_value.active==false -%}disabled{%- endif -%}>{{
+                                    filter.true_value.label }}</label>
+                            </li>
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ filter.false_value.value }}">
+                                    <input type="checkbox" name="{{ filter.param_name }}"
+                                        value="{{ filter.false_value.value }}" id="Filter-{{ filter.param_name }}" {% if
+                                        filter.false_value.active -%}checked{%- endif %} {% if
+                                        filter.false_value.count==0 and filter.false_value.active==false -%}disabled{%-
+                                        endif %}>{{ filter.false_value.label }}</label>
+                            </li>
+                        </ul>
+                        <!-- Apply Btn -->
+                        <!-- 
+                        <div>
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- when 'list' -%}
+                        <ul class="option-list-container">
+                            {%- for filter_value in filter.values -%}
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                                    <input type="checkbox" name="{{ filter_value.param_name }}"
+                                        value="{{ filter_value.value }}"
+                                        id="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if
+                                        filter_value.active -%}checked{%- endif %} {% if filter_value.count==0 and
+                                        filter_value.active==false -%}disabled{%- endif %}>
+                                    <span>
+                                        {%- case filter_value.display.type -%}
+                                        {%- when 'colors' -%}
+                                        {% liquid
+                                        assign size_limit = filter_value.display.value.size | at_most: 4
+                                        assign rotation = '0deg'
+                                        if size_limit == 2
+                                        assign rotation = '45deg'
+                                        endif
+
+                                        assign angle_increment = 360 | divided_by: size_limit
+                                        assign angle = 0
+                                        %}
+                                        {%- capture conic_gradient -%}
+                                        {%- for color in filter_value.display.value limit: size_limit -%}
+                                        {{ color }} {{ angle }}deg{%- assign angle = angle | plus: angle_increment %} {{
+                                        angle
+                                        }}deg{%- unless forloop.last %}, {%- endunless -%}
+                                        {%- endfor -%}
+                                        {%- endcapture -%}
+                                        <span style="
+                              width: 25px;
+                              height: 25px;
+                              border-radius: 50%;
+                              display: flex;
+                              justify-content: center;
+                              align-items: center;
+                              background: conic-gradient({{ conic_gradient }}); transform: rotateZ({{ rotation }});
+                            "></span>
+                                        {%- when 'image' -%}
+                                        {{
+                                        filter_value.display.value
+                                        | image_url: width: 25
+                                        | image_tag: alt: filter_value.display.value.alt
+                                        }}
+                                        {%- else -%}
+                                        <span class="visual-display__child"></span>
+                                        {%- endcase -%}
+                                    </span>
+                                    {{ filter_value.label }}
+                                </label>
+                            </li>
+                            {%- endfor -%}
+                        </ul>
+                        <!-- Apply Btn -->
+
+                        <!-- <div>
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- when 'price_range' -%}
+                        <div class="option-content price-option-content">
+                            <div class="price-range-value price-range-from">
+                                <span class="slider-range-unit">{{ cart.currency.symbol }}</span>
+
+                                <input onchange="priceOptionFill('filter.v.price.gte',event.target.value);redirectURL()"
+                                    name="{{ filter.min_value.param_name }}"
+                                    id="Filter-{{ filter.min_value.param_name }}" {% if filter.min_value.value -%}
+                                    value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" {%-
+                                    endif %} type="number" placeholder="min" min="0"
+                                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+
+                                <!-- <label for="Filter-{{ filter.min_value.param_name }}">From</label> -->
+                            </div>
+                            <div class="slider-input-split">
+                                -
+                            </div>
+                            <div class="price-range-value price-range-to">
+                                <span class="slider-range-unit">{{ cart.currency.symbol }}</span>
+
+                                <input onchange="priceOptionFill('filter.v.price.lte',event.target.value);redirectURL()"
+                                    name="{{ filter.max_value.param_name }}"
+                                    id="Filter-{{ filter.max_value.param_name }}" {% if filter.max_value.value -%}
+                                    value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" {%-
+                                    endif %} type="number"
+                                    placeholder="max"
+                                    min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+
+                                <!-- <label for="Filter-{{ filter.max_value.param_name }}">To</label> -->
+                            </div>
+                        </div>
+                        <!-- Apply Btn -->
+                        <!-- <div class="filter-group-display__submit">
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- endcase -%}
+                    </div>
+                </details>
+                {%- endfor -%} {% endcomment %}
+                <!-- 
+                <div>
+                    <p><a href="{{ collection.url }}?sort_by={{ collection.sort_by }}">Clear all</a></p>
+
+                    {%- for filter in collection.filters -%}
+                    {%- if filter.type == "price_range" -%}
+                    {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                    <p>
+                        <a href="{{ filter.url_to_remove }}">
+                            {%- assign min_value = filter.min_value.value | default: 0 -%}
+                            {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+                            {{ min_value | money }} - {{ max_value | money }} X
+                        </a>
+                    </p>
+                    {%- endif -%}
+                    {%- else -%}
+                    {%- for filter_value in filter.active_values -%}
+                    <p>
+                        <a href="{{ filter_value.url_to_remove }}">
+                            {{ filter.label }}: {{ filter_value.label }} X
+                        </a>
+                    </p>
+                    {%- endfor -%}
+                    {%- endif -%}
+                    {%- endfor -%}
+                </div> -->
+            </form>
+
+            <!-- Show Results -->
+            <button class="show-result-btn filter-toggle-btn">
+                Show Results ({{ collection.products_count }})
+            </button>
+        </div>
+
+        <div class="filter-overlay">
+        </div>
+    </div>
+
+    <!-- Mobile Responsive Filter -->
+    <div class="mobile-filter-wrapper">
+
+        <div class="mobile-filter-sidebar-wrapper">
+            <!-- Close Btn -->
+            <button class="mobile-filter-close-btn filter-toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                    aria-labelledby="Close">
+                    <title id="Close" hidden="">Close</title>
+                    <rect width="40" height="40" fill="#222222"></rect>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M21.4143 20L27.7072 13.707C28.0982 13.316 28.0982 12.684 27.7072 12.293C27.3162 11.902 26.6842 11.902 26.2933 12.293L20.0002 18.586L13.7072 12.293C13.3162 11.902 12.6842 11.902 12.2932 12.293C11.9022 12.684 11.9022 13.316 12.2932 13.707L18.5862 20L12.2932 26.293C11.9022 26.684 11.9022 27.316 12.2932 27.707C12.4882 27.902 12.7442 28 13.0002 28C13.2563 28 13.5122 27.902 13.7072 27.707L20.0002 21.414L26.2933 27.707C26.4882 27.902 26.7443 28 27.0002 28C27.2562 28 27.5122 27.902 27.7072 27.707C28.0982 27.316 28.0982 26.684 27.7072 26.293L21.4143 20Z"
+                        fill="white"></path>
+                    <mask id="mask0_21_1009" maskUnits="userSpaceOnUse" x="12" y="11" width="17" height="17">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M21.4143 20L27.7072 13.707C28.0982 13.316 28.0982 12.684 27.7072 12.293C27.3162 11.902 26.6842 11.902 26.2933 12.293L20.0002 18.586L13.7072 12.293C13.3162 11.902 12.6842 11.902 12.2932 12.293C11.9022 12.684 11.9022 13.316 12.2932 13.707L18.5862 20L12.2932 26.293C11.9022 26.684 11.9022 27.316 12.2932 27.707C12.4882 27.902 12.7442 28 13.0002 28C13.2563 28 13.5122 27.902 13.7072 27.707L20.0002 21.414L26.2933 27.707C26.4882 27.902 26.7443 28 27.0002 28C27.2562 28 27.5122 27.902 27.7072 27.707C28.0982 27.316 28.0982 26.684 27.7072 26.293L21.4143 20Z"
+                            fill="white"></path>
+                    </mask>
+                    <g mask="url(#mask0_21_1009)"></g>
+                </svg>
+            </button>
+            <!-- Filter Header -->
+            <div class="filter-sidebar-header">
+                <div>
+
+                    <button class="filter-back-btn" onclick="disableMobileSidebarOptionView()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" role="img" viewBox="0 0 7 12"
+                            fill="none" aria-labelledby="Close">
+                            <title id="Close" hidden="">Close</title>
+                            <path
+                                d="M6.58942 0.610713C6.26398 0.285274 5.73635 0.285274 5.41091 0.610713L0.611415 5.41021C0.455135 5.56649 0.366829 5.77895 0.366829 5.99996C0.366829 6.22098 0.454629 6.43294 0.610909 6.58922L5.41091 11.3892C5.73635 11.7147 6.26398 11.7147 6.58942 11.3892C6.91486 11.0638 6.91486 10.5362 6.58942 10.2107L2.37867 5.99996L6.58942 1.78922C6.91486 1.46379 6.91486 0.936153 6.58942 0.610713Z"
+                                fill="#222222"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <span id="filter-sidebar-header-text">
+                    Filter
+                </span>
+
+                <!-- Clear All Fitler Container -->
+                <div class="clear-all-filter-outer-container">
+                    <p id="clear-all-filter-header-btn">
+                        <a href="{{ collection.url }}?sort_by={{ collection.sort_by }}">Clear all</a>
+                    </p>
+
+                </div>
+                <!-- Clear Specific Filter Container-->
+                <div class="clear-filter-outer-container">
+
+                </div>
+            </div>
+            <!--Mobile  Filter Form -->
+            <form class="filter-form">
+                {% comment %} {%- for filter in collection.filters -%}
+                <details class="option-container">
+                    <summary>
+                        <div class="option-label-outer-container">
+                            <div class="option-label">
+                                <span>{{ filter.label }}</span>
+
+                                {%- if filter.type == "price_range" -%}
+                                {%- if filter.min_value.value or filter.max_value.value -%}
+                                <p data-filter-count="1" class="clear-btn-container">
+                                    <a class="clear-btn" href="{{ filter.url_to_remove }}">
+                                        clear
+                                    </a>
+                                </p>
+                                {%- endif -%}
+                                {%- else -%}
+                                <p data-filter-count="{{ filter.active_values.size }}" class="clear-btn-container">
+                                    <a class="clear-btn" href="{{ filter.url_to_remove }}">
+                                        Clear
+                                    </a>
+                                </p>
+                                {%- endif -%}
+                                <!-- {%- if filter.active_values.size > 0 -%}
+                                <span>({{ filter.active_values.size }})</span>
+                                {%- endif -%} -->
+                            </div>
+                        </div>
+
+                    </summary>
+
+                    <div>
+                        <div>
+                            <!-- <p>{{ filter.active_values.size }} selected</p> -->
+                            {%- if filter.active_values.size > 0 -%}
+                            <!-- <p><a href="{{ filter.url_to_remove }}">Reset</a></p> -->
+                            {%- endif -%}
+                        </div>
+                        {%- case filter.type -%}
+                        {%- when 'boolean' -%}
+                        <ul class="option-list-container">
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ filter.true_value.value }}">
+                                    <input type="checkbox" name="{{ filter.param_name }}"
+                                        value="{{ filter.true_value.value }}" id="Filter-{{ filter.param_name }}" {% if
+                                        filter.true_value.active -%}checked{%- endif %} {% if filter.true_value.count==0
+                                        and filter.true_value.active==false -%}disabled{%- endif -%}>{{
+                                    filter.true_value.label }}</label>
+                            </li>
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ filter.false_value.value }}">
+                                    <input type="checkbox" name="{{ filter.param_name }}"
+                                        value="{{ filter.false_value.value }}" id="Filter-{{ filter.param_name }}" {% if
+                                        filter.false_value.active -%}checked{%- endif %} {% if
+                                        filter.false_value.count==0 and filter.false_value.active==false -%}disabled{%-
+                                        endif %}>{{
+                                    filter.false_value.label }}</label>
+                            </li>
+                        </ul>
+                        <!-- Apply Btn -->
+
+                        <!-- <div>
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- when 'list' -%}
+                        <ul class="option-list-container">
+                            {%- for filter_value in filter.values -%}
+                            <li class="option-content">
+                                <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                                    <input type="checkbox" name="{{ filter_value.param_name }}"
+                                        value="{{ filter_value.value }}"
+                                        id="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if
+                                        filter_value.active -%}checked{%- endif %} {% if filter_value.count==0 and
+                                        filter_value.active==false -%}disabled{%- endif %}>
+                                    <span>
+                                        {%- case filter_value.display.type -%}
+                                        {%- when 'colors' -%}
+                                        {% liquid
+                                        assign size_limit = filter_value.display.value.size | at_most: 4
+                                        assign rotation = '0deg'
+                                        if size_limit == 2
+                                        assign rotation = '45deg'
+                                        endif
+
+                                        assign angle_increment = 360 | divided_by: size_limit
+                                        assign angle = 0
+                                        %}
+                                        {%- capture conic_gradient -%}
+                                        {%- for color in filter_value.display.value limit: size_limit -%}
+                                        {{ color }} {{ angle }}deg{%- assign angle = angle | plus: angle_increment %} {{
+                                        angle
+                                        }}deg{%- unless forloop.last %}, {%- endunless -%}
+                                        {%- endfor -%}
+                                        {%- endcapture -%}
+                                        <span style="
+                  width: 25px;
+                  height: 25px;
+                  border-radius: 50%;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  background: conic-gradient({{ conic_gradient }}); transform: rotateZ({{ rotation }});
+                "></span>
+                                        {%- when 'image' -%}
+                                        {{
+                                        filter_value.display.value
+                                        | image_url: width: 25
+                                        | image_tag: alt: filter_value.display.value.alt
+                                        }}
+                                        {%- else -%}
+                                        <span class="visual-display__child"></span>
+                                        {%- endcase -%}
+                                    </span>
+                                    {{ filter_value.label }}
+                                </label>
+                            </li>
+                            {%- endfor -%}
+                        </ul>
+                        <!-- Apply Btn -->
+
+                        <!-- <div>
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- when 'price_range' -%}
+                        <div class="option-content price-option-content">
+                            <div class="price-range-value price-range-from">
+                                <span class="slider-range-unit">{{ cart.currency.symbol }}</span>
+
+                                <input onchange="priceOptionFill('filter.v.price.gte',event.target.value);redirectURL()"
+                                    name="{{ filter.min_value.param_name }}"
+                                    id="Filter-{{ filter.min_value.param_name }}" {% if filter.min_value.value -%}
+                                    value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" {%-
+                                    endif %} type="number" placeholder="min" min="0"
+                                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+
+                                <!-- <label for="Filter-{{ filter.min_value.param_name }}">From</label> -->
+                            </div>
+                            <div class="slider-input-split">
+                                -
+                            </div>
+                            <div class="price-range-value price-range-to">
+                                <span class="slider-range-unit">{{ cart.currency.symbol }}</span>
+
+                                <input onchange="priceOptionFill('filter.v.price.lte',event.target.value);redirectURL()"
+                                    name="{{ filter.max_value.param_name }}"
+                                    id="Filter-{{ filter.max_value.param_name }}" {% if filter.max_value.value -%}
+                                    value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" {%-
+                                    endif %} type="number"
+                                    placeholder="max"
+                                    min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+
+                                <!-- <label for="Filter-{{ filter.max_value.param_name }}">To</label> -->
+                            </div>
+                        </div>
+                        <!-- Apply Btn -->
+                        <!-- <div class="filter-group-display__submit">
+                            <input type="submit" value="Apply">
+                        </div> -->
+                        {%- endcase -%}
+                    </div>
+                </details>
+                {%- endfor -%} {% endcomment %}
+
+                <!-- <div>
+                    <p><a href="{{ collection.url }}?sort_by={{ collection.sort_by }}">Clear all</a></p>
+
+                    {%- for filter in collection.filters -%}
+                    {%- if filter.type == "price_range" -%}
+                    {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                    <p>
+                        <a href="{{ filter.url_to_remove }}">
+                            {%- assign min_value = filter.min_value.value | default: 0 -%}
+                            {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+                            {{ min_value | money }} - {{ max_value | money }} X
+                        </a>
+                    </p>
+                    {%- endif -%}
+                    {%- else -%}
+                    {%- for filter_value in filter.active_values -%}
+                    <p>
+                        <a href="{{ filter_value.url_to_remove }}">
+                            {{ filter.label }}: {{ filter_value.label }} X
+                        </a>
+                    </p>
+                    {%- endfor -%}
+                    {%- endif -%}
+                    {%- endfor -%}
+                </div> -->
+            </form>
+            <!-- Mobile Responsive Option List -->
+
+            <div id="mobile-sidebar-option-wrapper">
+                <ul class="option-list-container">
+                </ul>
+            </div>
+            <!-- Show Results -->
+            <button class="show-result-btn filter-toggle-btn">
+                Show Results ({{ collection.products_count }})
+            </button>
+        </div>
+
+        <div class="filter-overlay">
+        </div>
+    </div>
+</section>
+
+<!-- FILTER SECTION ENDS -->
+
+  <div class="product-view-container">
+    <div class="full-view-btn" onclick="fullView()">
+    </div>
+    <div class="grid-view-btn" onclick="gridView()">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  {% paginate collection.products by 42 %}
+  <ul class="product-list-wrapper boost-pfs-filter-products" id="product-list">
+    {%- for product in collection.products -%}
     <li>
+      
       <div class="product-card-wrapper products product{{ forloop.index }}" id="product{{ forloop.index }}" data-index="{{ forloop.index }}" data-product-id="{{ product.id }}">
-        <!-- Existing product rendering code remains unchanged -->
+      {% if product.published_at %}
+      {% if product.metafields.custom.product_family %}
+        
+       <!-- Check if product have product key metafield then added logic of color swatch click in true condition -->
+            {%- assign refer_product_ids = '' -%}
+            {% for refer_product in product.metafields.custom.product_family.value  %}
+               {%- assign refer_product_ids = refer_product_ids | append: refer_product.id | append: ',' -%}
+            {%- endfor -%}
+             {%- assign skip_product = false -%}
+            {%- if refer_product_ids contains product.id -%}
+                {%- assign skip_product = true -%}
+            {%- endif -%}
+
+      {% for refer_product in product.metafields.custom.product_family.value  %}
+         
+        <div class="product-details product-details-{{ refer_product.id }}" id="product-details-{{ refer_product.id }}" data-product-id="{{ refer_product.id }}" {%- if skip_product == false -%} {% if  forloop.first %} style="display:block;" {% else %} style="display:none;" {% endif %} {% else %}  {% if  refer_product.id != product.id %} style="display:none;" {% endif %} {% endif %}>
+         <div class="product-card-top-wrapper">
+         {% comment %} <a class="product-card" href="{{ refer_product.url | within: collection }}">{% endcomment %}
+          <a class="product-card" href="{{ refer_product.url }}">
+            <div style="height:100%">
+  
+              <!-- PRODUCT IMAGE -->
+              
+              {% assign has_men = false %}
+                {% assign has_women = false %}
+                {% assign has_unisex = false %}
+                 
+                {% for tag in refer_product.tags %}
+                  {% assign cleaned_tag = tag | downcase | strip %}
+                 
+                  {% if cleaned_tag == 'gender:mens' or cleaned_tag == 'gender:men' %}
+                    {% assign has_men = true %}
+                  {% elsif cleaned_tag == 'gender:womens' or cleaned_tag == 'gender:women' %}
+                    {% assign has_women = true %}
+                  {% elsif cleaned_tag == 'gender:unisex' %}
+                    {% assign has_unisex = true %}
+                  {% endif %}
+                {% endfor %}
+                 
+                {% assign gender = '' %}
+                {% if has_men and has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men and has_women %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men %}
+                  {% assign gender = 'Men' %}
+                {% elsif has_women %}
+                  {% assign gender = 'Women' %}
+                {% endif %}
+        
+              <div class="product-asset">
+                  {% assign video_found = false %}
+                    {% for media in refer_product.media %}
+                      {% if media.media_type == 'video' and video_found == false %}
+                        {% assign video_found = true %}
+                        <div class="media-container">
+                          <div class="media-container-overlay"></div>
+                          <img class="desktop-product-image default-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                          <video class="hover-video" muted loop playsinline preload="metadata">
+                            {% for source in media.sources %}
+                              {% if source.format == 'mp4' %}
+                                <source src="{{ source.url }}">
+                              {% endif %}
+                            {% endfor %}
+                          </video>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% unless video_found %}
+                  {% if refer_product.images[2].src %}
+                    <img class="desktop-product-image" data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
+                      data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
+                      src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                     <!-- <img class="mobile-product-image"  src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                  {% elsif refer_product.images[1].src and refer_product.template_suffix == 'product-custom' %}
+                    <img class="desktop-product-image" 
+                      data-img="{{ refer_product.featured_image.src | img_url: '1024x' }}"
+                      data-hover-img="{{ refer_product.images[1].src  | img_url: '1024x' }}"
+                      src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" /> 
+                    <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" />  -->
+                  {% else %}
+                      <img class="desktop-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ refer_product.title }} {{ refer_product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                      <!-- <img class="mobile-product-image" src="{{ refer_product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                    
+                  {% endif %}
+                  {% endunless %}  
+                </div>
+            </div>
+  
+  
+            <!-- Add To Wishlist -->
+            <div class="add-to-wishlist-wrapper">
+  
+            </div>
+  
+            <!-- NEW / SOLD OUT LABEL -->
+                        {% assign specific_tag = 'Badge:Preorder' %}
+                        {% assign specific_tag_value = 'Badge:ComingSoon' %}
+                        
+            {% if refer_product.available == false %}
+
+              {% if product.tags contains specific_tag %}
+                <div class="product-label">PREORDER</div>
+              {% elsif product.tags contains 'Badge:Jay' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Jay Shetty</span></div>
+              {% elsif product.tags contains 'Badge:WideFit' %}
+                <div class="product-label two-line-badge"><span>Available in</span> <span> Wide Fit </span> </div>
+              {% elsif product.tags contains 'Badge:Isabella' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+              {% elsif product.tags contains 'Badge:Rachel' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+              {% elsif product.tags contains 'Badge:Stylist' %}
+                <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+              {% elsif product.tags contains specific_tag_value %}  
+                <div class="product-label badge-mobile-hide">COMING SOON</div>
+               {% else %}
+               {% comment %} <div class="product-label">SOLD OUT</div> {% endcomment %}
+              {% endif %}
+              
+            {% else %}
+
+              {% if product.tags contains specific_tag %}
+                <div class="product-label">PREORDER</div>
+              {% elsif product.tags contains 'Badge:Jay' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Jay Shetty</span></div>
+              {% elsif product.tags contains 'Badge:WideFit' %}
+                <div class="product-label two-line-badge"><span>Available in</span> <span> Wide Fit </span> </div>
+              {% elsif product.tags contains 'Badge:Isabella' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+              {% elsif product.tags contains 'Badge:Rachel' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+              {% elsif product.tags contains 'Badge:Stylist' %}
+                <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+              {% else %}  
+               {% for t in refer_product.tags %}
+                  {% if t contains 'Badge:BackinStock' %} 
+                     <div class="product-label">BACK IN STOCK</div>
+                  {% elsif t contains 'smarttag_new_arrival' %} 
+                     <div class="product-label">NEW</div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              
+            {% endif %} 
+  
+  
+            <!-- SOLD OUT SECTION -->
+                                    {% assign specific_tag = 'Badge:Preorder' %}
+{% assign specific_tag_value = 'Badge:ComingSoon' %}
+            {% if refer_product.available == false %}
+              {% if product.tags contains specific_tag %}
+                <div class="product-status">PREORDER</div>
+              {% elsif product.tags contains specific_tag_value %}  
+                <div class="product-status badge-mobile-hide">COMING SOON</div>
+              {% else %}
+                <div class="product-status">SOLD OUT</div>   
+              {% endif %}                
+            {%- endif -%}
+            <!-- BUY SECTION -->
+                                    {% assign specific_tag = 'Badge:Preorder' %}
+{% assign specific_tag_value = 'Badge:ComingSoon' %}
+            {% if refer_product.available %}
+            <div class="product-buy-sold-out-section">
+            {% if refer_product.available == false %}               
+              {% if product.tags contains specific_tag %}
+                <div class="product-status">PREORDER</div>
+              {% elsif product.tags contains specific_tag_value %}  
+                <div class="product-status badge-mobile-hide">COMING SOON</div>
+              {% else %}
+                <div class="product-status">SOLD OUT</div>   
+              {% endif %} 
+            {% else %}
+              {% assign specific_tag = 'Badge:Preorder' %}
+              {% if product.tags contains specific_tag %}
+              <div class="product-buy-section">
+                <!-- QUICK BUY BTN -->
+                  <a class="product-card" href="{{ refer_product.url }}">
+
+                <div class="quick-buy-section">
+                  <p class="quick-buy-text" >
+                 
+                    PREORDER
+                  </p>
+                
+                </div>
+                  </a>                
+                
+                
+                <!-- SIZE / ADD TO CART SECTION -->
+                <div class="size-add-to-cart-section">
+  
+                  <!-- SIZE SECTION -->
+                  {% assign variant_count = refer_product.variants | size %}
+                  {% if variant_count > 1 %}
+                  <div class="size-section-wrapper">
+                    {% if refer_product.options[1] != blank %}
+                      <span class="size-title">SIZE</span>
+                    {% else %}
+                      <span class="size-title">DENOMINATIONS</span>
+                    {% endif %}
+  
+                    <div class="size-list-container">
+                      {% for variant in refer_product.variants %}
+                      {% if variant.available %}
+                      <div class="variant-info">
+                        <form action="/cart/add" method="post">
+                          <input type="hidden" name="id" value="{{ variant.id }}" />
+                          {% if variant.option2 != blank %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
+                          {% else %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
+                          {% endif %}
+                        </form>
+                      </div>
+                      {% else %}
+                      <div class="variant-info">
+                        {% if variant.option2 != blank %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
+                        {% else %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
+                        {% endif %}
+                      </div>
+                      {% endif %}
+                      {% endfor %}
+  
+                    </div>
+  
+                  </div>
+                  <!-- ADD TO CART BTN -->
+                  {% else %}
+                  <div class="add-to-cart-container">
+                    <form action="/cart/add" method="post">
+                      <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
+                      <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
+                    </form>
+                  </div>
+                  {% endif %}
+  
+                </div>
+              </div>
+                {% else %}
+                <div class="product-buy-section">
+                <!-- QUICK BUY BTN -->
+                  <a class="product-card" href="{{ refer_product.url }}">
+
+                <div class="quick-buy-section">
+                  <p class="quick-buy-text" >
+                 
+                    Quick Buy
+                  </p>
+                
+                </div>
+                  </a>                
+                
+                
+                <!-- SIZE / ADD TO CART SECTION -->
+                <div class="size-add-to-cart-section">
+  
+                  <!-- SIZE SECTION -->
+                  {% assign variant_count = refer_product.variants | size %}
+                  {% if variant_count > 1 %}
+                  <div class="size-section-wrapper">
+                    {% if refer_product.options[1] != blank %}
+                      <span class="size-title">SIZE</span>
+                    {% else %}
+                      <span class="size-title">DENOMINATIONS</span>
+                    {% endif %}
+  
+                    <div class="size-list-container">
+                      {% for variant in refer_product.variants %}
+                      {% if variant.available %}
+                      <div class="variant-info">
+                        <form action="/cart/add" method="post">
+                          <input type="hidden" name="id" value="{{ variant.id }}" />
+                          {% if variant.option2 != blank %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
+                          {% else %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
+                          {% endif %}
+                        </form>
+                      </div>
+                      {% else %}
+                      <div class="variant-info">
+                        {% if variant.option2 != blank %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
+                        {% else %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
+                        {% endif %}
+                      </div>
+                      {% endif %}
+                      {% endfor %}
+  
+                    </div>
+  
+                  </div>
+                  <!-- ADD TO CART BTN -->
+                  {% else %}
+                  <div class="add-to-cart-container">
+                    <form action="/cart/add" method="post">
+                      <input type="hidden" name="id" value="{{ refer_product.variants.first.id }}" />
+                      <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
+                    </form>
+                  </div>
+                  {% endif %}
+  
+                </div>
+              </div>
+                {% endif %}
+              {% endif %}
+            </div>
+            {%- endif -%}
+          </a>
+  
+        </div>
+  
+        <!-- INFO SECTION -->
+        <div class="product-info-wrapper">
+          <div class="product-details-container">
+          </div>
+        </div>
+      </div>      
+    {% endfor %}
+
+      <!-- COLOR SECTION -->
+            <div class="color-product-title" >
+              <!-- below condition is for display the particular color at first in product -->
+              {% assign featured_swatch = null %}
+              {% assign other_swatchs = '' %}
+              
+              {% for refer_product in product.metafields.custom.product_family.value  %}
+                {% if  refer_product.id == product.id %}  
+                  {% assign featured_swatch = refer_product %}
+                {% else %}
+                  {%- assign other_swatchs = other_swatchs | append: refer_product.id | append: ',' -%}
+                {% endif %}
+              {% endfor %}
+              
+              
+              <div class="color-variant-wrapper" data-index="{{ forloop.index }}">
+                  {% if featured_swatch %}
+                    <div class="color-variant-swatch {% if other_swatchs != '' %}swatch {% endif %}" data-variant-id="{{ color_option }}" data-product-id="{{ featured_swatch.id }}" >
+                        <img src="{{ featured_swatch.images.last | img_url: 'medium' }}" alt="{{ featured_swatch.title }}", width="", height="">
+                     </div>
+                  {% endif %}
+                
+                  {% for refer_product in product.metafields.custom.product_family.value  %}
+                    {%- if other_swatchs contains refer_product.id -%}
+                     <div class="color-variant-swatch {% if forloop.length > 1 %}swatch {% endif %}" data-variant-id="{{ color_option }}" data-product-id="{{ refer_product.id }}" >
+                        <img src="{{ refer_product.images.last | img_url: 'medium' }}" alt="{{ refer_product.title }}", width="", height="">
+                     </div>
+                    {%- endif -%}
+                  {% endfor %}
+                </div>  
+
+                <!--PRICE SECTION -->
+                  {% for refer_product in product.metafields.custom.product_family.value  %}
+                       <div class="product-details product-details-{{ refer_product.id }}" {%- if skip_product == false -%} {% if  forloop.first %} style="display:block;" {% else %} style="display:none;" {% endif %} {% else %}  {% if  refer_product.id != product.id %} style="display:none;" {% endif %} {% endif %}>
+                         <div class="price-section">
+                            {%- if refer_product.price -%}
+                            {%-if refer_product.compare_at_price != refer_product.final_line_price %}
+                            <p class="product-price">{{ refer_product.price | money  }}
+                             {% if refer_product.tags contains 'permanent_markdown' %}
+                               {% assign old_price = refer_product.compare_at_price| money_without_currency   %}
+                               {% assign new_price =refer_product.price | money_without_currency%}
+                               {% assign  discount_value = new_price | divided_by: old_price | times: 100  %}
+                               {% assign final_discount = 100 | minus: discount_value %}
+                               ({{ final_discount | ceil }}% OFF) 
+                             {% endif %}
+                             </p> 
+                            {%- else -%}
+                            <p class="product-price" style="color:black">{{ refer_product.price | money  }}</p>
+                
+                            {%-endif -%}
+                            {%- endif -%}
+                
+                            {% if refer_product.compare_at_price != refer_product.final_line_price %}
+                            <del class="order-list__line.variant.compare_at_price product-compare-at-price">{{ refer_product.compare_at_price
+                              |
+                              money }}</del>
+                            {% endif %}
+                          </div>
+                       </div>
+                  {% endfor %} 
+                 <!--PRICE SECTION END -->
+          </div>
+
+         <!-- PRODUCT TITLE -->
+           {% for refer_product in product.metafields.custom.product_family.value  %}
+              <div class="title-container product-details product-details-{{ refer_product.id }}" {%- if skip_product == false -%} {% if  forloop.first %} style="display:block;" {% else %} style="display:none;" {% endif %} {% else %}  {% if  refer_product.id != product.id %} style="display:none;" {% endif %} {% endif %}>
+                  <a class="product-card" href="{{ refer_product.url }}">
+                      <span class="product-title">{{ refer_product.title  }}</span>
+                  </a>
+               <!-- PRODUCT RATINGS -->
+              <div class="product-ratings-container">
+                  <!-- Loading Text -->
+                  <span class="loading-container">
+                      <span class="loading-text">Reviews / Rating Loading</span>
+                      <span class="spinner"></span>
+                  </span>
+
+                  <!-- Product Ratings Content -->
+                  <div class="bv-inline-rating" data-bv-show="inline_rating" data-bv-product-id="{{ product.id }}" 
+                   data-bv-redirect-url="{{ product.url }}" data-bv-seo="false">
+                  </div>
+
+                  <!-- Yotpo Ratings -->
+                  <div class="yotpo bottomLine" data-appkey="2J604wtjmJrwlaN4BhAmaQW5NCK2vdiehl3uoScl"
+                   data-domain="{{shop.permanent_domain | escape }}" 
+                   data-product-id="{{ refer_product.id }}"
+                   data-product-models="{{ refer_product.id }}" 
+                   data-name="{{ refer_product.title | escape }}"
+                   data-url="{{ shop.url }}{{ refer_product.url }}"
+                   data-image-url="{{ refer_product.featured_image | product_img_url: 'large' | replace: '?', '%3F' | replace: '&','%26'}}"
+                   data-description="{{ refer_product.description | escape }}"
+                   data-bread-crumbs="{% for tag in refer_product.tags %}{{ tag | escape }};{% endfor %}">
+                  </div>
+              </div>
+              </div>
+            {% endfor %}
+        
+      
+    {% else %}
+              
+        <!-- If product don't have metafiled for product key then run by default code below:  -->
+        <div class="product-card-top-wrapper">
+          <a class="product-card" href="{{ product.url }}">
+            <div style="height:100%">
+  
+              <!-- PRODUCT IMAGE -->
+              {% assign has_men = false %}
+                {% assign has_women = false %}
+                {% assign has_unisex = false %}
+                 
+                {% for tag in product.tags %}
+                  {% assign cleaned_tag = tag | downcase | strip %}
+                 
+                  {% if cleaned_tag == 'gender:mens' or cleaned_tag == 'gender:men' %}
+                    {% assign has_men = true %}
+                  {% elsif cleaned_tag == 'gender:womens' or cleaned_tag == 'gender:women' %}
+                    {% assign has_women = true %}
+                  {% elsif cleaned_tag == 'gender:unisex' %}
+                    {% assign has_unisex = true %}
+                  {% endif %}
+                {% endfor %}
+                 
+                {% assign gender = '' %}
+                {% if has_men and has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men and has_women %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_women and has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_unisex %}
+                  {% assign gender = 'Unisex' %}
+                {% elsif has_men %}
+                  {% assign gender = 'Men' %}
+                {% elsif has_women %}
+                  {% assign gender = 'Women' %}
+                {% endif %}
+        
+              <div class="product-asset">
+                  {% assign video_found = false %}
+                  {% for media in product.media %}
+                    {% if media.media_type == 'video' and video_found == false %}
+                      {% assign video_found = true %}
+                      <div class="media-container">
+                        <div class="media-container-overlay"></div>
+                        <img class="desktop-product-image default-image" src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ product.title }} {{ product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                        <video class="hover-video" muted loop playsinline preload="metadata">
+                          {% for source in media.sources %}
+                            {% if source.format == 'mp4' %}
+                              <source src="{{ source.url }}">
+                            {% endif %}
+                          {% endfor %}
+                        </video>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                  {% unless video_found %}
+                  {% if product.images[2].src %}
+                    <img class="desktop-product-image" data-img="{{ product.featured_image.src | img_url: '1024x' }}"
+                      data-hover-img="{{ product.images[1].src  | img_url: '1024x' }}"
+                      src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ product.title }} {{ product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                     <!-- <img class="mobile-product-image"  src="{{ product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                  {% elsif product.images[1].src and product.template_suffix == 'product-custom' %}
+                    <img class="desktop-product-image" 
+                      data-img="{{ product.featured_image.src | img_url: '1024x' }}"
+                      data-hover-img="{{ product.images[1].src  | img_url: '1024x' }}"
+                      src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ product.title }} {{ product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" /> 
+                    <!-- <img class="mobile-product-image" src="{{ product.featured_image.src | img_url: '1024x' }}" alt="" />  -->
+                  {% else %}
+                      <img class="desktop-product-image" src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ shop.name }} - {{ product.title }} {{ product.type }} {% if gender != blank %}for {{ gender }} {% endif %}" />
+                      <!-- <img class="mobile-product-image" src="{{ product.featured_image.src | img_url: '1024x' }}" alt="" /> -->
+                    
+                  {% endif %}
+                  {% endunless %}
+                </div>
+            </div>
+  
+  
+            <!-- Add To Wishlist -->
+            <div class="add-to-wishlist-wrapper">
+  
+            </div>
+  
+            <!-- NEW / SOLD OUT LABEL -->
+{% assign specific_tag = 'Badge:Preorder' %}
+{% assign specific_tag_value = 'Badge:ComingSoon' %}
+            
+{% if product.available == false %}
+
+              {% if product.tags contains specific_tag %}
+                  <div class="product-label">PREORDER</div>
+              {% elsif product.tags contains 'Badge:Jay' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Jay Shetty</span></div>
+              {% elsif product.tags contains 'Badge:WideFit' %}
+                <div class="product-label two-line-badge"><span>Available in</span> <span> Wide Fit </span> </div>
+              {% elsif product.tags contains 'Badge:Isabella' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+              {% elsif product.tags contains 'Badge:Rachel' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+               {% elsif product.tags contains 'Badge:Stylist' %}
+                <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+                {% elsif product.tags contains specific_tag_value %}  
+                  <div class="product-label">COMING SOON</div>
+                {% else %}
+                {% comment %}  <div class="product-label">SOLD OUT</div>  {% endcomment %}
+                {% endif %}
+              {% else %}
+
+                {% if product.tags contains specific_tag %}
+                  <div class="product-label">PREORDER</div>
+                {% elsif product.tags contains 'Badge:Jay' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Jay Shetty</span></div>
+              {% elsif product.tags contains 'Badge:WideFit' %}
+                <div class="product-label two-line-badge"><span>Available in</span> <span> Wide Fit </span> </div>
+                {% elsif product.tags contains 'Badge:Isabella' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span>Isabella Strahan</span></div>
+                {% elsif product.tags contains 'Badge:Rachel' %}
+                <div class="product-label two-line-badge"><span>As Seen On</span> <span> Rachel Platten </span> </div>
+                {% elsif product.tags contains 'Badge:Stylist' %}
+                <div class="product-label two-line-badge badge"><span>Stylist's</span> <span>Pick</span></div>
+                {% else %}  
+                 {% for t in product.tags %}
+                    {% if t contains 'Badge:Preorder' %}
+                      <div class="product-label">PREORDER</div>
+                    {% elsif t contains 'Badge:BackinStock' %} 
+                       <div class="product-label">BACK IN STOCK</div>
+                    {% elsif t contains 'smarttag_new_arrival' %} 
+                       <div class="product-label">NEW</div>
+                    {% endif %}
+                  {% endfor %}
+                  {% endif %}
+                
+              {% endif %}
+  
+  
+            <!-- SOLD OUT SECTION -->
+            {% assign specific_tag = 'Badge:Preorder' %}
+{% assign specific_tag_value = 'Badge:ComingSoon' %}
+            {% if product.available == false %}
+                   {% if product.tags contains specific_tag %}
+                    <div class="product-status">PREORDER</div>
+                  {% elsif product.tags contains specific_tag_value %}  
+                    <div class="product-status">COMING SOON</div>
+                  {% else %}
+                    <div class="product-status">SOLD OUT</div>   
+                  {% endif %}   
+            {%- endif -%}
+            <!-- BUY SECTION -->
+            {% assign specific_tag = 'Badge:Preorder' %}
+            {% assign specific_tag_value = 'Badge:ComingSoon' %}
+            {% if product.available %}
+                          <div class="product-buy-sold-out-section">
+            {% if product.available == false %}  
+                {% if product.tags contains specific_tag %}
+                    <div class="product-status">PREORDER</div>
+                  {% elsif product.tags contains specific_tag_value %}  
+                    <div class="product-status">COMING SOON</div>
+                  {% else %}
+                    <div class="product-status">SOLD OUT</div>   
+                  {% endif %}       
+            {% else %}
+              
+              <div class="product-buy-section">
+                <!-- QUICK BUY BTN -->
+                  <a class="product-card" href="{{ product.url }}">
+
+                <div class="quick-buy-section">
+                  {% if product.tags contains specific_tag %}
+                  <p class="quick-buy-text" >
+                 
+                    PREORDER
+                  </p>
+                  {% else %}
+                    <p class="quick-buy-text" >
+                 
+                    Quick Buy
+                  </p>
+                  {% endif %}
+                
+                </div>
+                  </a>                
+                
+                
+                <!-- SIZE / ADD TO CART SECTION -->
+                <div class="size-add-to-cart-section">
+  
+                  <!-- SIZE SECTION -->
+                  {% assign variant_count = product.variants | size %}
+                  {% if variant_count > 1 %}
+                  <div class="size-section-wrapper">
+                    {% if product.options[1] != blank %}
+                      <span class="size-title">SIZE</span>
+                    {% else %}
+                      <span class="size-title">DENOMINATIONS</span>
+                    {% endif %}
+  
+                    <div class="size-list-container">
+                      {% for variant in product.variants %}
+                      {% if variant.available %}
+                      <div class="variant-info">
+                        <form action="/cart/add" method="post">
+                          <input type="hidden" name="id" value="{{ variant.id }}" />
+                          {% if variant.option2 != blank %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} />
+                          {% else %}
+                            <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} />
+                          {% endif %}
+                        </form>
+                      </div>
+                      {% else %}
+                      <div class="variant-info">
+                        {% if variant.option2 != blank %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option2 }} disabled />
+                        {% else %}
+                          <input type="submit" class="add-to-cart-btn size-option-btn" value={{ variant.option1 }} disabled />
+                        {% endif %}
+                      </div>
+                      {% endif %}
+                      {% endfor %}
+  
+                    </div>
+  
+                  </div>
+                  <!-- ADD TO CART BTN -->
+                  {% else %}
+                  <div class="add-to-cart-container">
+                    <form action="/cart/add" method="post">
+                      <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+                      <input type="submit" class="add-to-cart-btn" value="Add to Cart" />
+                    </form>
+                  </div>
+                  {% endif %}
+  
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            {%- endif -%}
+          </a>
+  
+        </div>
+  
+        <!-- INFO SECTION -->
+        <div class="product-info-wrapper">
+          <div class="product-details-container single-color-product">
+            <!-- COLOR - TITLE -->
+            <div class="color-product-title">
+              <div class="color-variant-wrapper">
+                <!-- <span class="color-variant color-{{ product.variants.option1 | handle }}"> -->
+                <img class="color-variant" src="{{ product.images.last.src | img_url: '1024x' }}"
+                  alt="{{ product.images.last.alt }}" />
+                </span>
+              </div>
+  
+             
+             
+            </div>
+            <!--PRICE SECTION -->
+            <div class="price-section">
+              {%- if product.price -%}
+              {%-if product.compare_at_price != product.final_line_price %}
+              <p class="product-price">{{ product.price | money  }}
+                {% if product.tags contains 'permanent_markdown' %}
+                 {% assign old_price = product.compare_at_price| money_without_currency   %}
+                 {% assign new_price =product.price | money_without_currency%}
+                 {% assign  discount_value = new_price | divided_by: old_price | times: 100  %}
+                 {% assign final_discount = 100 | minus: discount_value %}
+                  ({{ final_discount | ceil }}% OFF)
+               {% endif %}
+              </p>
+              {%- else -%}
+              <p class="product-price" style="color:black">{{ product.price | money  }}</p>
+  
+              {%-endif -%}
+              {%- endif -%}
+  
+              {% if product.compare_at_price != product.final_line_price %}
+              <del class="order-list__line.variant.compare_at_price product-compare-at-price">{{ product.compare_at_price
+                |
+                money }}</del>
+              {% endif %}
+            </div>
+          </div>
+
+         <a class="product-card" href="{{ product.url }}">
+              <span class="product-title">{{ product.title  }}</span>
+              </a>
+          <!-- PRODUCT RATINGS -->
+          <div class="product-ratings-container">
+                  <!-- Loading Text -->
+                  <span class="loading-container">
+                      <span class="loading-text">Reviews / Rating Loading</span>
+                      <span class="spinner"></span>
+                  </span>
+
+                  <!-- Product Ratings Content -->
+                  <div class="bv-inline-rating" data-bv-show="inline_rating" data-bv-product-id="{{ product.id }}" 
+                   data-bv-redirect-url="{{ product.url }}" data-bv-seo="false">
+                  </div>
+
+                  <!-- Yotpo Ratings -->
+                  <div class="yotpo bottomLine" data-appkey="2J604wtjmJrwlaN4BhAmaQW5NCK2vdiehl3uoScl"
+                   data-domain="{{shop.permanent_domain | escape }}" 
+                   data-product-id="{{ refer_product.id }}"
+                   data-product-models="{{ refer_product.id }}" 
+                   data-name="{{ refer_product.title | escape }}"
+                   data-url="{{ shop.url }}{{ refer_product.url }}"
+                   data-image-url="{{ refer_product.featured_image | product_img_url: 'large' | replace: '?', '%3F' | replace: '&','%26'}}"
+                   data-description="{{ refer_product.description | escape }}"
+                   data-bread-crumbs="{% for tag in refer_product.tags %}{{ tag | escape }};{% endfor %}">
+                  </div>
+              </div>
+              </div>
+  
+       {% endif %}
+       {% endif %} 
       </div>
     </li>
-  {%- endfor -%}
-</ul>
+    {%- endfor -%}
+  </ul>
+    {% if paginate.pages > 1 %}
+    <div class="pagination-container">
+      <div class="pagination">
+        {{ paginate | default_pagination }}
+      </div>
+    </div>
+    {% endif %}
+    {% endpaginate %}
+    <div class="boost-pfs-filter-bottom-pagination"></div>
+<div class="boost-pfs-filter-load-more"></div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all buttons with the class 'color-variant-swatch'
+    var buttons = document.querySelectorAll('.color-variant-swatch');
+
+    buttons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        
+        // Get the product ID from the button's data attribute
+        var productId = button.getAttribute('data-product-id');
+
+        // Get the data index of color swatch div from clicked button
+        const parentDiv = this.parentElement;
+        const colorDataIndex = parentDiv.getAttribute('data-index');
+        
+        // Get the data index of main product from main product loop
+        const pro_elements = document.querySelectorAll('.products');
+        pro_elements.forEach(element => {
+            const pro_index = element.getAttribute('data-index');  
+            // Check if data index of main product and data index of color swatch div is same. 
+            if (pro_index == colorDataIndex) {
+              
+               // hide the other products
+              document.querySelectorAll('.product'+colorDataIndex + ' .product-details').forEach(function(element) {
+                 element.style.display = 'none';
+              });
+              
+              // Show the product details for the clicked button
+              document.querySelectorAll('.product'+colorDataIndex + ' .product-details-' + productId).forEach(function(element1) {
+                 element1.style.display = 'block';
+              });
+                     
+            }
+
+        });
+      });
+    });
+
+   // Filter Starts (Added Delay to calculate final header dimension)
+  setTimeout(()=>{
+      
+    let header = document.getElementById("section-container-content-header");
+
+    // Set Filter Postion for mobile and desktops
+    let filterElement = document.querySelectorAll(".filter-wrapper")[0];
+    filterElement.style.top = window.getComputedStyle(header).height;
+    let mobileFilterElement = document.querySelectorAll(".mobile-filter-wrapper")[0]
+    mobileFilterElement.style.top = window.getComputedStyle(header).height;
+    
+
+  },500)
+    // Filter Ends
+  });
+  
+    document.getElementById("nogin-search-app").innerHTML =`<div class="search-box">
+  <form action="/search" method="post">
+  <label for="searchbox" style="position: absolute; top: -1000px; left: -1000px;">Search</label>
+  <input type="text" id="searchbox" name="q" placeholder="Search" autocomplete="off" value="" style="padding: 10px; width: 100%;">
+  </form>
+  </div>`
+    
+    function gridView(){
+      document.getElementById("product-list").className = "product-list-wrapper"
+    }
+  
+    function fullView(){
+      document.getElementById("product-list").className = "product-list-full-view"
+    }
+
+    let img_list = document.getElementsByClassName("desktop-product-image")
+
+      for(let i=0;i<img_list.length;i++){
+       let imgSrc = img_list[i].dataset.img;
+       let hoverImgSrc = img_list[i].dataset.hoverImg;
+        if(hoverImgSrc){
+
+          if(navigator.maxTouchPoints>0){
+             img_list[i].addEventListener("touchstart",()=>{
+              img_list[i].src = hoverImgSrc
+              })
+            img_list[i].addEventListener("touchend",()=>{
+              img_list[i].src= imgSrc
+             })
+          }else{
+            img_list[i].addEventListener("mouseover",()=>{
+              img_list[i].src = hoverImgSrc
+            })
+            img_list[i].addEventListener("mouseout",()=>{
+              img_list[i].src= imgSrc
+            })
+          }
+   
+        }
+        
+      }    
+  // COLLECTION PAGE FILTER STARTS
+   
+
+  // Toggle Filter For Desktop and Mobile
+  let filterToggleBtns = document.body.querySelectorAll(".filter-toggle-btn")
+  let filterSection = document.querySelectorAll(".collection-page-filter-section")[0]
+  filterToggleBtns.forEach(filterToggle => {
+      filterToggle.addEventListener("click", (event) => {
+          updateDesktopFilterAccordion();
+          let isFilterOpened = filterSection.classList.contains("active-filter");
+          if (isFilterOpened) {
+              filterSection.classList.remove("active-filter");
+              document.querySelector("footer#site-footer").style.zIndex = "auto";
+          } else {
+              filterSection.classList.add("active-filter");
+              document.querySelector("footer#site-footer").style.zIndex = "-1";
+          }
+      })
+  })
+
+    // Setting Check box click event for desktop
+    function setFilterCheckBoxEvent() {
+        let optionContents = document.querySelectorAll(".filter-wrapper .option-content:not(.price-option-content)")
+        optionContents.forEach(elem => {
+            elem.addEventListener("click", (event) => {
+                event.preventDefault();
+                let checkBoxSelected = event.target.closest(".option-content").querySelector("input[type='checkbox']")
+
+                let name = checkBoxSelected?.getAttribute('name')
+                let value = checkBoxSelected?.getAttribute('value')
+
+                let isActiveCheckbox = event.target.closest(".option-content").classList.contains("option-content-active");
+                if (isActiveCheckbox) {
+                    deselectCheckboxes(name, value)
+                }
+                else {
+                    selectCheckboxes(name, value)
+                }
+                redirectURL();
+            })
+        })
+    }
+  
+    setFilterCheckBoxEvent();
+
+    // Set Check box click event for mobile 
+    function setMobileFilterCheckBoxEvent() {
+        let mobileOptionContents = document.querySelectorAll(".mobile-filter-wrapper .option-content:not(.price-option-content)");
+        let submitMobileBtn = document.querySelectorAll(".mobile-filter-wrapper .option-list-container input[type='submit']")[0]
+        mobileOptionContents.forEach(elem => {
+            elem.addEventListener("click", (event) => {
+                event.preventDefault();
+                let checkBoxSelected = event.target.closest(".option-content").querySelector("input[type='checkbox']")
+
+                let name = checkBoxSelected?.getAttribute('name')
+                let value = checkBoxSelected?.getAttribute('value')
+                let isActiveCheckbox = event.target.closest(".option-content").classList.contains("option-content-active");
+                if (isActiveCheckbox) {
+                    deselectCheckboxes(name, value)
+                }
+                else {
+                    selectCheckboxes(name, value)
+                }
+                redirectURL()
+            })
+        })
+    }
+
+
+    // On Mobile Filter, Populating Options list from Selected Category in UI
+    let options = document.querySelectorAll(".mobile-filter-wrapper .filter-form .option-container");
+    let mobileSidebarOptionList = document.querySelectorAll("#mobile-sidebar-option-wrapper > .option-list-container")[0];
+    options.forEach(optionElem => {
+        optionElem.addEventListener('click', function (event) {
+            event.preventDefault();
+            let selectedOptions = event.currentTarget.querySelectorAll(".option-content");
+            let referenceClearBtn = event.currentTarget.querySelectorAll(".clear-btn-container")[0]
+            if(referenceClearBtn){
+                createClearFilterBtn(referenceClearBtn)
+            }
+            mobileSidebarOptionList.innerHTML = ''
+            selectedOptions.forEach(elem => {
+                mobileSidebarOptionList.append(elem.cloneNode(true))
+            })
+            let headerText = event.currentTarget.querySelector(".option-label span").innerText;
+            setMobileFilterHeader(headerText);
+            setMobileFilterCheckBoxEvent();
+            enableMobileSidebarOptionView()
+        });
+    })
+
+
+    function enableMobileSidebarOptionView() {
+        let elem = document.querySelectorAll(".mobile-filter-sidebar-wrapper")[0];
+        elem.classList.add("show-mobile-sidebar-options-view");
+    }
+
+
+    function disableMobileSidebarOptionView() {
+        let elem = document.querySelectorAll(".mobile-filter-sidebar-wrapper")[0];
+        elem.classList.remove("show-mobile-sidebar-options-view");
+        setMobileFilterHeader("Filter");
+        // Check For Clear All BTN 
+        createClearAllFilterBtn();
+    }
+
+    function setMobileFilterHeader(headerText) {
+        let filterHeaderElement = document.getElementById("filter-sidebar-header-text")
+        filterHeaderElement.innerText = headerText
+    }
+
+
+    function redirectURL() {
+        // Base URL
+        const baseUrl = window.location.origin + window.location.pathname;
+        const url = new URL(baseUrl);
+        const checkboxes = document.querySelectorAll('.filter-wrapper .option-content-active input[type="checkbox"]');
+
+        // Append selected checkbox values to the URL
+        checkboxes.forEach((checkbox) => {
+            let nameOfCheckbox = checkbox?.getAttribute('name');
+            url.searchParams.append(nameOfCheckbox, checkbox.value);
+        });
+
+        const priceRangeOptions = document.querySelectorAll('.filter-wrapper .price-option-content input');
+        priceRangeOptions.forEach(elem => {
+            if(elem.value){
+                let nameOfPriceInput = elem.getAttribute('name')
+                url.searchParams.append(nameOfPriceInput, elem.value);
+            }
+        })
+
+        // Redirect to the new URL
+        window.location.href = url.toString();
+    }
+
+    // Selecting Checkboxes From Params On Initial Page Load
+    let currentURL = new URL(window.location.href);
+    currentURL.searchParams.forEach((value, name) => {
+        if (name == 'filter.v.price.gte' || name == 'filter.v.price.lte') {
+            priceOptionFill(name, value)
+        }
+        else {
+            selectCheckboxes(name, value);
+        }
+    })
+
+
+    // Selection of Checkboxes after filter apply
+    function selectCheckboxes(name, value) {
+        let optionContents = document.querySelectorAll(`.option-content:has( input[name='${name}'][value='${value}'])`);
+        optionContents.forEach(elem => {
+            elem.classList.add('option-content-active')
+        })
+        checkClearFilterBtns()
+    }
+
+    // De-Selection of Checkboxes after filter apply
+    function deselectCheckboxes(name, value) {
+        let optionContents = document.querySelectorAll(`.option-content:has( input[name='${name}'][value='${value}'])`)
+        optionContents.forEach(elem => {
+            elem.classList.remove('option-content-active')
+        })
+        checkClearFilterBtns()
+    }
+
+    // Price Option 
+    function priceOptionFill(name, value) {
+       
+        let isPriceFilterApplied = false;
+
+        // Set Value for Price Range From Value
+        if (name == 'filter.v.price.gte') {
+            let priceInputRangeFrom = document.querySelectorAll(".option-content .price-range-from input");
+            priceInputRangeFrom.forEach(elem => {
+                elem.value = value
+            })
+
+            if (value) {
+                isPriceFilterApplied = true;
+            }
+        }
+
+        // Set Value for Price Range To Value
+        if (name == 'filter.v.price.lte') {
+            let priceInputRangeTo = document.querySelectorAll(".option-content .price-range-to input");
+            priceInputRangeTo.forEach(elem => {
+                elem.value = value
+            })
+            if (value) {
+                isPriceFilterApplied = true;
+            }
+        }
+
+        // Toggling active Classes 
+        let priceRangeContainer = document.querySelectorAll(".option-content.price-option-content");
+        if (isPriceFilterApplied) {
+
+            priceRangeContainer.forEach(elem => {
+                elem.classList.add("option-content-active")
+            })
+        } else {
+            priceRangeContainer.forEach(elem => {
+                elem.classList.remove("option-content-active")
+            })
+        }
+        checkClearFilterBtns();
+    }
+
+
+    function clearAllFilter() {
+        // Base URL
+        const baseUrl = window.location.origin + window.location.pathname;
+        const url = new URL(baseUrl);
+        // Redirect to the new URL
+        window.location.href = url.toString();
+    }
+
+
+    function clearFilter(name) {
+        let optionContents = document.querySelectorAll(`.option-content:has( input[name='${name}'])`)
+        optionContents.forEach(elem => {
+            elem.classList.remove('option-content-active')
+        })
+        redirectURL()
+    }
+
+    // Check if any filters applied and enable Clear Btn
+    function checkClearFilterBtns() {
+        let clearBtns = document.querySelectorAll(".filter-wrapper .clear-btn-container");
+
+        clearBtns.forEach(clearBtn => {
+            let isFilterApplied = clearBtn?.getAttribute('data-filter-count') > 0;
+
+            if (isFilterApplied) {
+                clearBtn.style.display = 'inline-block'
+            }
+            else {
+                clearBtn.style.display = 'none'
+            }
+        })
+    }
+
+    checkClearFilterBtns();
+
+
+    // Create Filter btn for Mobile
+    function createClearFilterBtn(clearBtn) {
+
+        let isFilterApplied = clearBtn?.getAttribute("data-filter-count") > 0;
+        let clearFilterContainer = document.querySelectorAll(".clear-filter-outer-container")[0];
+        clearFilterContainer.innerHTML = ''
+        if (isFilterApplied) {
+            clearFilterContainer.append(clearBtn.cloneNode(true))
+        }
+
+    }
+
+    // Check clear all filter btn For Mobile
+
+    function createClearAllFilterBtn() {
+        let clearAllMobileBtns = document.querySelectorAll(".mobile-filter-wrapper .filter-form .clear-btn-container");
+
+        let isFilterApplied = false;
+
+        for (let i = 0; i < clearAllMobileBtns.length; i++) {
+            let filterCount = clearAllMobileBtns[i].getAttribute("data-filter-count");
+            if (filterCount > 0) {
+                isFilterApplied = true;
+                break;
+            }
+        }
+
+        let clearAllFilterBtn = document.getElementById("clear-all-filter-header-btn")
+        if (isFilterApplied) {
+            clearAllFilterBtn.style.display = 'inline-block';
+        }
+        else {
+            clearAllFilterBtn.style.display = 'none';
+        }
+
+    }
+
+    createClearAllFilterBtn();
+
+     // Open Filter Accordion when filter options are selected
+    function updateDesktopFilterAccordion() {
+        let detailsTags = document.querySelectorAll(".filter-wrapper details");
+
+        detailsTags.forEach(elem => {
+            let activeFilterElements = elem.querySelector(".option-content.option-content-active");
+
+            if (activeFilterElements) {
+                elem.open = true;
+            }
+            else {
+                elem.open = false;
+            }
+        })
+    }
+
+    updateDesktopFilterAccordion();
+  // COLLECTION PAGE FILTER ENDS
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".product-ratings-container").forEach(container => {
+        const loadingContainer = container.querySelector(".loading-container"); // Wrapper for text & spinner
+        const ratingElementBV = container.querySelector(".bv-inline-rating");
+        const ratingElementYotpo = container.querySelector(".yotpo.bottomLine");
+
+        function hideLoadingIfRatingsLoaded() {
+            const isBVLoaded = ratingElementBV && ratingElementBV.innerText.trim() !== "";
+            const isYotpoLoaded = ratingElementYotpo && ratingElementYotpo.innerText.trim() !== "";
+
+            if (isBVLoaded || isYotpoLoaded) {
+                if (loadingContainer) {
+                    loadingContainer.style.display = "none"; // Hide loading text & spinner together
+                }
+            }
+        }
+
+        // Initial check in case ratings load quickly
+        hideLoadingIfRatingsLoaded();
+
+        // Use MutationObserver to detect when ratings appear dynamically
+        const observer = new MutationObserver(() => hideLoadingIfRatingsLoaded());
+
+        if (ratingElementBV) {
+            observer.observe(ratingElementBV, { childList: true, subtree: true });
+        }
+        if (ratingElementYotpo) {
+            observer.observe(ratingElementYotpo, { childList: true, subtree: true });
+        }
+
+        // Stop observing after 30 seconds to avoid performance issues
+        setTimeout(() => observer.disconnect(), 30000);
+    });
+});
+
+    /*Ticket 282*/
+  const mediaContainerList = document.querySelectorAll('.media-container');
+    mediaContainerList.forEach(mediaContainer => {
+        let mediaContainerOverlay = mediaContainer.querySelector('.media-container-overlay');
+        let productImage = mediaContainer.querySelector('.desktop-product-image');
+        let productVideo = mediaContainer.querySelector('.hover-video');
+
+        // Hover and hover out Events on Desktop and Mobile
+        
+        // Desktop Hover Events
+        let onHoverEvent = 'mouseover';
+        let onHoverOutEvent = 'mouseout';
+        // Mobile Hover Events
+        if (navigator.maxTouchPoints > 0) {
+            onHoverEvent = 'touchstart';
+            onHoverOutEvent = 'touchend';
+        }
+
+        mediaContainerOverlay?.addEventListener(onHoverEvent, () => {
+            if (productImage && productVideo) {
+                productImage.style.display = 'none';
+                productVideo.style.display = 'block';
+                productVideo.play();
+            }
+        });
+        mediaContainerOverlay?.addEventListener(onHoverOutEvent, () => {
+            if (productImage && productVideo) {
+                productImage.style.display = 'block';
+                productVideo.style.display = 'none';
+                productVideo.pause();
+            }
+        });
+    });
+  /*Ticket 282*/
+
+  </script>
+
+  <script>
+    // Declare boostPFSThemeConfig variable
+    var boostPFSThemeConfig = {
+      label: {
+        sorting: {% assign temp = 'collections.sorting.title' | t %} {% unless temp contains 'translation missing' %} {{ temp | json }} {% else %} "Sorting" {% endunless %},
+        sorting_best_selling: {% assign temp = collection.sort_options[1].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Best Selling" {% endunless %},
+        sorting_manual: {% assign temp = collection.sort_options[0].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Featured" {% endunless %},
+        sorting_title_ascending: {% assign temp = collection.sort_options[2].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Alphabetically, A-Z" {% endunless %},
+        sorting_title_descending: {% assign temp = collection.sort_options[3].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Alphabetically, Z-A" {% endunless %},
+        sorting_price_ascending: {% assign temp = collection.sort_options[4].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Lowest Price" {% endunless %},
+        sorting_price_descending: {% assign temp = collection.sort_options[5].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Highest Price" {% endunless %},
+        sorting_date_ascending: {% assign temp = collection.sort_options[6].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Date, Old to New" {% endunless %},
+        sorting_date_descending: {% assign temp = collection.sort_options[7].name %} {% unless temp == nil %} {{ temp | json }} {% else %} "Date, New to Old" {% endunless %},
+        sorting_relevance: {% assign temp = 'collections.sorting.relevance' | t %} {% unless temp contains 'translation missing' %} {{ temp | json }} {% else %} "Relevance" {% endunless %},
+        sale: {{ 'products.product.on_sale' | t | json }},
+        sale_price: {{ 'products.product.sale_price' | t | json }},
+        sold_out: {{ 'products.product.sold_out' | t | json }},
+        vendor: {{ 'products.product.vendor' | t | json }},
+        regular_price: {{ 'products.product.regular_price' | t | json }},
+        items_with_count_one: {{ 'collections.general.items_with_count.one' | t | json }},
+        items_with_count_other: {{ 'collections.general.items_with_count.other' | t | json }},
+        current_page: {{ 'general.pagination.current_page' | t | json }},
+      },
+      custom: {
+        products_per_page: 20,
+        product_grid_class: '',
+      }
+    };
+  
+    // Declare Templates variable
+    var boostPFSTemplate = {
+      soldOutClass: ' sold-out',
+      saleClass: ' on-sale',
+      soldOutLabelHtml: {% render 'boost-pfs-filter-html', layout: 'soldOutLabelHtml' %},
+      saleLabelHtml: {% render 'boost-pfs-filter-html', layout: 'saleLabelHtml' %},
+      tagLabelHtml: {% render 'boost-pfs-filter-html', layout: 'tagLabelHtml' %},
+      vendorHtml: {% render 'boost-pfs-filter-html', layout: 'vendorHtml' %},
+      productGridItemHtml: {% render 'boost-pfs-filter-html', layout: 'productGridItemHtml' %},
+      productListItemHtml: {% render 'boost-pfs-filter-html', layout: 'productListItemHtml' %},
+      previousActiveHtml: {% render 'boost-pfs-filter-html', layout: 'previousActiveHtml' %},
+      previousDisabledHtml: {% render 'boost-pfs-filter-html', layout: 'previousDisabledHtml' %},
+      nextActiveHtml: {% render 'boost-pfs-filter-html', layout: 'nextActiveHtml' %},
+      nextDisabledHtml: {% render 'boost-pfs-filter-html', layout: 'nextDisabledHtml' %},
+      pageItemHtml: {% render 'boost-pfs-filter-html', layout: 'pageItemHtml' %},
+      pageItemSelectedHtml: {% render 'boost-pfs-filter-html', layout: 'pageItemSelectedHtml' %},
+      pageItemRemainHtml: {% render 'boost-pfs-filter-html', layout: 'pageItemRemainHtml' %},
+      paginateHtml: {% render 'boost-pfs-filter-html', layout: 'paginateHtml' %},
+      sortingHtml: {% render 'boost-pfs-filter-html', layout: 'sortingHtml' %},
+      showLimitHtml: {% render 'boost-pfs-filter-html', layout: 'showLimitHtml' %},
+      breadcrumbHtml: {% render 'boost-pfs-filter-html', layout: 'breadcrumbHtml' %},
+      breadcrumbDivider: {% render 'boost-pfs-filter-html', layout: 'breadcrumbDivider' %},
+      breadcrumbItemLink: {% render 'boost-pfs-filter-html', layout: 'breadcrumbItemLink' %},
+      breadcrumbItemSelected: {% render 'boost-pfs-filter-html', layout: 'breadcrumbItemSelected' %}
+    };
+  </script>  
